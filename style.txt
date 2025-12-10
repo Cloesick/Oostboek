@@ -1,0 +1,18 @@
+Strategic Critique: Visual Design & CSS (Devil's Advocate)
+The "Bureau Blanc" Trap (Sterile vs. Trustworthy): The design (likely by Bureau Blanc based on your footer) prioritizes aesthetic minimalism over financial authority . A heavy reliance on whitespace (the "Bureau Blanc" signature) creates a sense of calm, but for an accountant, "calm" can be read as "passive." It lacks the visual density that signals "we handle complex data."
+
+Typography is "Safe" (Helvetica/Sans-Serif mediocrity): You likely use a standard modern sans-serif font. This is the visual equivalent of a gray suit. It's acceptable, but it renders you invisible. It doesn't command attention; it asks for permission to be read.
+
+Invisible Navigation: Modern "clean" designs often hide navigation or reduce contrast to look elegant. For a service site, this is a friction point. Clients (especially older business owners) shouldn't have to hunt for the "Login" or "Contact" button amidst a sea of ​​whitespace.
+
+Lack of Data Visualization: You are accountants. Why are there no charts, graphs, or visual representations of growth on the homepage? The design relies on text to say "we help you grow," instead of graphics that show it.
+
+Generic "Stock" Atmosphere: Even if photos are real, the lighting and staging likely mimic stock photography (bright, airy, smiling). It feels like a brochure, not a war room.
+
+Category,Execution,Hex/Font Estimate,Psychological Signal
+Primary Font,"Clean Sans-Serif (eg, Montserrat or Open Sans )","font-family: 'Montserrat', sans-serif;","""We are modern, approachable, and have nothing to hide."" (But also: ""We are generic."")"
+Secondary Font,"Neutral Body Sans (e.g., Roboto or Lato )","font-family: 'Roboto', sans-serif;","Optimized for readability, not personality. Functional but flavorless."
+Primary Color,Clinical White,#FFFFFF,"Hygiene, clarity, transparency. The ""Bureau Blanc"" trademark"
+Text Color,Soft Charcoal,#333333or#2C3E50,"Less harsh than pure black, trying to be ""friendly"" rather than ""authoritative."""
+Accent Color,Accountant Blue,#1A73E8(Standard) or #003366(Navy),"The safest color in business. Signals ""Trust"" and ""Stability"" but zero ""Innovation."""
+Backgrounds,Light Grey Washes,#F5F7FA,Used to break up sections without committing to a bold color

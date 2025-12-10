@@ -1,0 +1,175 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User model with GDPR compliance fields
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  passwordHash      String
+  firstName         String
+  lastName          String
+  phone             String?
+  vatNumber         String?
+  
+  // MFA fields (Phase 2)
+  mfaEnabled        Boolean   @default(false)
+  mfaSecret         String?
+  
+  // GDPR Compliance
+  gdprConsentAt     DateTime?
+  gdprConsentVersion String?
+  dataRetentionYears Int      @default(10)
+  
+  // Timestamps
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  lastLoginAt       DateTime?
+  deletedAt         DateTime?
+  
+  // Relations
+  appointments      Appointment[]
+  documents         Document[]
+  chatSessions      ChatSession[]
+  auditLogs         AuditLog[]
+  
+  @@index([email])
+  @@index([deletedAt])
+}
+
+// Staff members (accountants, advisors)
+model Staff {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  passwordHash      String
+  firstName         String
+  lastName          String
+  role              String    // ACCOUNTANT, ADVISOR, JURIST, ADMIN
+  specializations   String    @default("") // Comma-separated: "tax,succession,startup"
+  workingHours      String?   // JSON string
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  appointments      Appointment[]
+  
+  @@index([role])
+}
+
+// Appointment Booking Tool (ABT)
+model Appointment {
+  id                String    @id @default(cuid())
+  userId            String
+  staffId           String
+  
+  serviceType       String    // VAT_ADMINISTRATION, TAX_CONSULTATION, etc.
+  status            String    @default("PENDING") // PENDING, CONFIRMED, CANCELLED, COMPLETED, NO_SHOW
+  scheduledAt       DateTime
+  durationMinutes   Int       @default(30)
+  
+  topic             String
+  description       String?
+  documentsNeeded   String    @default("") // Comma-separated
+  
+  reminderSentAt    DateTime?
+  confirmedAt       DateTime?
+  cancelledAt       DateTime?
+  cancelReason      String?
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  user              User      @relation(fields: [userId], references: [id])
+  staff             Staff     @relation(fields: [staffId], references: [id])
+  
+  @@index([userId])
+  @@index([staffId])
+  @@index([scheduledAt])
+  @@index([status])
+}
+
+// Document management
+model Document {
+  id                String    @id @default(cuid())
+  userId            String
+  
+  filename          String
+  mimeType          String
+  sizeBytes         Int
+  storageKey        String
+  
+  category          String    // INVOICE, RECEIPT, CONTRACT, TAX_RETURN, ANNUAL_ACCOUNTS, OTHER
+  year              Int?
+  
+  retainUntil       DateTime
+  
+  createdAt         DateTime  @default(now())
+  deletedAt         DateTime?
+  
+  user              User      @relation(fields: [userId], references: [id])
+  
+  @@index([userId])
+  @@index([category])
+  @@index([retainUntil])
+}
+
+// AI Chatbot sessions
+model ChatSession {
+  id                String    @id @default(cuid())
+  userId            String
+  
+  status            String    @default("ACTIVE") // ACTIVE, RESOLVED, ESCALATED
+  escalatedAt       DateTime?
+  escalationReason  String?
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  user              User      @relation(fields: [userId], references: [id])
+  messages          ChatMessage[]
+  
+  @@index([userId])
+  @@index([status])
+}
+
+model ChatMessage {
+  id                String    @id @default(cuid())
+  sessionId         String
+  
+  role              String    // USER, ASSISTANT, SYSTEM
+  content           String
+  sources           String    @default("") // Comma-separated
+  
+  createdAt         DateTime  @default(now())
+  
+  session           ChatSession @relation(fields: [sessionId], references: [id])
+  
+  @@index([sessionId])
+}
+
+// GDPR Audit logging
+model AuditLog {
+  id                String    @id @default(cuid())
+  userId            String?
+  
+  action            String    // LOGIN, LOGOUT, CREATE, READ, UPDATE, DELETE, EXPORT, CONSENT_GIVEN, CONSENT_WITHDRAWN
+  resource          String
+  resourceId        String?
+  
+  ipAddress         String?
+  userAgent         String?
+  metadata          String?   // JSON string
+  
+  createdAt         DateTime  @default(now())
+  
+  user              User?     @relation(fields: [userId], references: [id])
+  
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}

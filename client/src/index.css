@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Roboto', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-surface-50 text-primary-900;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', system-ui, sans-serif;
+    @apply font-bold tracking-tight;
+  }
+
+  /* Financial data styling */
+  .font-data {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center px-5 py-2.5 rounded font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary-900 text-white hover:bg-primary-800 focus:ring-primary-500 shadow-sm hover:shadow;
+  }
+
+  .btn-secondary {
+    @apply btn bg-white text-primary-900 border-2 border-primary-200 hover:bg-primary-50 hover:border-primary-300 focus:ring-primary-500;
+  }
+
+  .btn-accent {
+    @apply btn bg-accent-500 text-white hover:bg-accent-600 focus:ring-accent-500 shadow-sm hover:shadow-md;
+  }
+
+  .input {
+    @apply w-full px-4 py-3 border-2 border-primary-200 rounded focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all;
+  }
+
+  .card {
+    @apply bg-white rounded shadow-card border border-primary-100 p-6;
+  }
+
+  /* Data card - for financial metrics */
+  .data-card {
+    @apply bg-white border-2 border-primary-100 p-4 shadow-data;
+  }
+
+  /* Prominent navigation */
+  .nav-link {
+    @apply text-white font-semibold px-3 py-2 hover:bg-primary-800 rounded transition-colors;
+  }
+
+  .nav-link-active {
+    @apply bg-accent-500 text-white;
+  }
+
+  /* Data visualization helpers */
+  .stat-number {
+    @apply font-mono text-3xl font-bold text-primary-900;
+  }
+
+  .stat-label {
+    @apply text-sm font-medium text-primary-600 uppercase tracking-wide;
+  }
+
+  /* Progress bar for data viz */
+  .progress-bar {
+    @apply h-2 bg-primary-100 rounded-full overflow-hidden;
+  }
+
+  .progress-fill {
+    @apply h-full bg-accent-500 rounded-full transition-all duration-500;
+  }
+}
+
+/* PWA install prompt styling */
+@media (display-mode: standalone) {
+  .install-prompt {
+    display: none;
+  }
+}
