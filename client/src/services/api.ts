@@ -1,4 +1,4 @@
-import type { ApiResponse } from '../types/api';
+import type { ApiResponse, User, Staff, Appointment, ChatSession } from '../types/api';
 
 const API_BASE = import.meta.env.PROD 
   ? 'https://3kxjm2mtcj.eu-central-1.awsapprunner.com/api' 
@@ -30,7 +30,7 @@ async function request<T>(
 export const api = {
   // Auth
   login: (email: string, password: string) =>
-    request<{ user: any; token: string }>('/auth/login', {
+    request<{ user: User; token: string }>('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     }),
@@ -42,21 +42,21 @@ export const api = {
     lastName: string;
     gdprConsent: boolean;
   }) =>
-    request<{ user: any; token: string }>('/auth/register', {
+    request<{ user: User; token: string }>('/auth/register', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
 
-  getMe: () => request<any>('/auth/me'),
+  getMe: () => request<User>('/auth/me'),
 
   // Appointments
-  getAppointments: () => request<any[]>('/appointments'),
+  getAppointments: () => request<Appointment[]>('/appointments'),
   
   getAvailableSlots: (date: string, staffId?: string) =>
     request<string[]>(`/appointments/available-slots?date=${date}${staffId ? `&staffId=${staffId}` : ''}`),
   
   getStaff: (serviceType?: string) => 
-    request<any[]>(`/appointments/staff${serviceType ? `?serviceType=${serviceType}` : ''}`),
+    request<Staff[]>(`/appointments/staff${serviceType ? `?serviceType=${serviceType}` : ''}`),
   
   createAppointment: (data: {
     staffId: string;
@@ -65,27 +65,27 @@ export const api = {
     topic: string;
     description?: string;
   }) =>
-    request<any>('/appointments', {
+    request<Appointment>('/appointments', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
 
   cancelAppointment: (id: string, reason?: string) =>
-    request<any>(`/appointments/${id}/cancel`, {
+    request<Appointment>(`/appointments/${id}/cancel`, {
       method: 'PATCH',
       body: JSON.stringify({ reason }),
     }),
 
   // Chat
-  getChatSessions: () => request<any[]>('/chat/sessions'),
+  getChatSessions: () => request<ChatSession[]>('/chat/sessions'),
   
   createChatSession: () =>
-    request<any>('/chat/sessions', { method: 'POST' }),
+    request<ChatSession>('/chat/sessions', { method: 'POST' }),
   
-  getChatSession: (id: string) => request<any>(`/chat/sessions/${id}`),
+  getChatSession: (id: string) => request<ChatSession>(`/chat/sessions/${id}`),
   
   sendMessage: (sessionId: string, content: string) =>
-    request<any>(`/chat/sessions/${sessionId}/messages`, {
+    request<ChatSession>(`/chat/sessions/${sessionId}/messages`, {
       method: 'POST',
       body: JSON.stringify({ content }),
     }),
@@ -105,7 +105,7 @@ export const api = {
     }),
 
   // Profile
-  getProfile: () => request<any>('/profile'),
+  getProfile: () => request<User>('/profile'),
   
   updateProfile: (data: {
     companyName?: string;
@@ -116,7 +116,7 @@ export const api = {
     postalCode?: string;
     howDidYouHear?: string;
   }) =>
-    request<any>('/profile', {
+    request<User>('/profile', {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
