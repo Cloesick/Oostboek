@@ -16,6 +16,7 @@ interface Message {
   showActions?: 'appointment' | 'contact' | 'both';
   links?: ChatLink[];
   sources?: string[];
+  suggestions?: string[];
 }
 
 // Knowledge base with Q&A network
@@ -214,14 +215,14 @@ export default function ChatPage() {
     {
       id: '1',
       role: 'assistant',
-      content: 'Welkom bij Oostboek! 👋 Hoe kan ik u vandaag helpen?\n\nIk kan u informatie geven over:\n• BTW, vennootschapsbelasting & fiscaliteit\n• Boekhouding, jaarrekeningen & facturatie\n• Startersbegeleiding & KBO-registratie\n• Successieplanning & overname\n• GDPR, attesten & nuttige tools\n\nIk geef u ook direct links naar officiële bronnen zoals FOD Financiën, NBB, en RSZ.',
+      content: 'Welkom bij Oostboek! 👋 Hoe kan ik u vandaag helpen?\n\nKies een onderwerp hieronder of typ uw vraag:',
       timestamp: new Date(),
-      showActions: 'both',
+      showActions: undefined,
       links: [
-        { label: 'Afspraak maken', url: '/appointments', type: 'internal' },
-        { label: 'Alle nuttige links', url: '/links', type: 'internal' },
         { label: 'Veelgestelde vragen', url: '/#faq', type: 'internal' },
+        { label: 'Alle nuttige links', url: '/links', type: 'internal' },
       ],
+      suggestions: ['BTW aangifte', 'Starter worden', 'Vennootschapsbelasting', 'Jaarrekening', 'GDPR privacy', 'Tarieven', '30bis aannemer', 'Afspraak maken'],
     },
   ]);
   const [input, setInput] = useState('');
@@ -262,18 +263,19 @@ export default function ChatPage() {
         showActions: response.showActions,
         links: response.links,
         sources: response.sources,
+        suggestions: response.suggestions,
       };
       setMessages((prev) => [...prev, assistantMessage]);
       setIsTyping(false);
     }, 1000);
   };
 
-  const generateResponse = (userInput: string): { content: string; showActions?: 'appointment' | 'contact' | 'both'; links?: ChatLink[]; sources?: string[] } => {
+  const generateResponse = (userInput: string): { content: string; showActions?: 'appointment' | 'contact' | 'both'; links?: ChatLink[]; sources?: string[]; suggestions?: string[] } => {
     const lower = userInput.toLowerCase();
     setQuestionCount(prev => prev + 1);
 
     // Special case: affirmative response (ja/yes) - direct to Calendly
-    if (lower === 'ja' || lower === 'yes' || lower === 'ok' || lower === 'oké' || lower === 'graag' || lower === 'ja graag') {
+    if (lower === 'ja' || lower === 'yes' || lower === 'ok' || lower === 'oké' || lower === 'graag' || lower === 'ja graag' || lower.includes('ja, graag')) {
       return {
         content: '📅 **Perfect!** Klik hieronder om direct een afspraak in te plannen via Calendly. Kies een tijdstip dat u het beste uitkomt.',
         showActions: undefined,
@@ -281,6 +283,19 @@ export default function ChatPage() {
           { label: '📅 Plan afspraak via Calendly', url: 'https://calendly.com/oostboek/kennismaking', type: 'external' },
           { label: 'Of bel ons: 050/45 70 31', url: 'tel:+3250457031', type: 'external' },
         ],
+      };
+    }
+
+    // Special case: negative response - show topic options
+    if (lower === 'nee' || lower === 'no' || lower.includes('nee,') || lower.includes('nog een vraag')) {
+      setQuestionCount(0); // Reset question count
+      return {
+        content: 'Geen probleem! 😊 Waar kan ik u verder mee helpen?\n\nKies een onderwerp:',
+        showActions: undefined,
+        links: [
+          { label: 'Veelgestelde vragen', url: '/#faq', type: 'internal' },
+        ],
+        suggestions: ['BTW aangifte', 'Starter worden', 'Vennootschapsbelasting', 'Jaarrekening', 'GDPR privacy', 'Tarieven'],
       };
     }
 
@@ -312,25 +327,59 @@ export default function ChatPage() {
     // After 3 questions without match, prompt for appointment
     if (questionCount >= 2) {
       return {
-        content: 'Bedankt voor uw vragen! 🤝 Ik merk dat u meerdere zaken wilt bespreken. Voor een volledig beeld van uw situatie raad ik een persoonlijk gesprek aan met een van onze specialisten. Dit is vrijblijvend en gratis.\n\nZal ik een afspraak voor u inplannen?',
-        showActions: 'both',
+        content: 'Bedankt voor uw vragen! 🤝 Ik merk dat u meerdere zaken wilt bespreken. Voor een volledig beeld van uw situatie raad ik een persoonlijk gesprek aan met een van onze specialisten. Dit is vrijblijvend en gratis.\n\nWilt u een afspraak maken om uw specifieke situatie te bespreken?',
+        showActions: undefined,
         links: [
-          { label: 'Afspraak maken', url: '/appointments', type: 'internal' },
           { label: 'Veelgestelde vragen', url: '/#faq', type: 'internal' },
           { label: 'Alle nuttige links', url: '/links', type: 'internal' },
         ],
+        suggestions: ['Ja, graag een afspraak', 'Nee, ik heb nog een vraag'],
       };
     }
 
     // Default response with helpful suggestions
     return {
-      content: 'Bedankt voor uw vraag! 🤔 Kunt u wat meer details geven?\n\nProbeer bijvoorbeeld:\n• "BTW aangifte" voor BTW-info\n• "Starter" voor startersbegeleiding\n• "Jaarrekening" voor boekhoudinfo\n• "GDPR" voor privacy-advies\n• "Tarieven" voor prijsinformatie\n\nOf bekijk onze veelgestelde vragen en nuttige links!',
+      content: 'Bedankt voor uw vraag! 🤔 Waar kan ik u mee helpen?\n\nKies een onderwerp of typ uw vraag:',
       showActions: 'both',
       links: [
         { label: 'Veelgestelde vragen', url: '/#faq', type: 'internal' },
         { label: 'Alle nuttige links', url: '/links', type: 'internal' },
       ],
+      suggestions: ['BTW aangifte', 'Starter worden', 'Jaarrekening', 'GDPR privacy', 'Tarieven', 'Afspraak maken'],
     };
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setInput(suggestion);
+    // Trigger send after a brief delay to show the input
+    setTimeout(() => {
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        role: 'user',
+        content: suggestion,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, userMessage]);
+      setIsTyping(true);
+
+      setTimeout(() => {
+        const response = generateResponse(suggestion);
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: response.content,
+          timestamp: new Date(),
+          showActions: response.showActions,
+          links: response.links,
+          sources: response.sources,
+          suggestions: response.suggestions,
+        };
+        setMessages((prev) => [...prev, assistantMessage]);
+        setIsTyping(false);
+      }, 1000);
+
+      setInput('');
+    }, 100);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -437,6 +486,21 @@ export default function ChatPage() {
                 <p className="text-xs text-gray-400 mt-2">
                   Bronnen: {message.sources.join(', ')}
                 </p>
+              )}
+
+              {/* Clickable suggestions */}
+              {message.role === 'assistant' && message.suggestions && message.suggestions.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {message.suggestions.map((suggestion, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => handleSuggestionClick(suggestion)}
+                      className="px-3 py-1.5 bg-primary-100 text-primary-700 text-sm rounded-full hover:bg-primary-200 transition-colors border border-primary-200"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
               )}
               
               {/* Action buttons for lead generation */}
