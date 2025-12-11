@@ -153,13 +153,25 @@ const DOCUMENT_TYPES: Record<string, DocumentTypeConfig> = {
 
 type DocumentType = keyof typeof DOCUMENT_TYPES;
 
+export interface ProcessedDocument {
+  id: string;
+  fileName: string;
+  fileSize: string;
+  documentType: string;
+  documentTypeLabel: string;
+  documentTypeIcon: string;
+  fields: Record<string, string>;
+  uploadedAt: Date;
+}
+
 interface DocumentUploadModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onComplete: (document: ProcessedDocument) => void;
   file: { name: string; size: string; rawFile?: File } | null;
 }
 
-export default function DocumentUploadModal({ isOpen, onClose, file }: DocumentUploadModalProps) {
+export default function DocumentUploadModal({ isOpen, onClose, onComplete, file }: DocumentUploadModalProps) {
   const [step, setStep] = useState<'type' | 'fields' | 'review'>('type');
   const [selectedType, setSelectedType] = useState<DocumentType | null>(null);
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
@@ -220,6 +232,8 @@ export default function DocumentUploadModal({ isOpen, onClose, file }: DocumentU
   };
 
   const handleSubmit = async () => {
+    if (!selectedType) return;
+    
     setIsSubmitting(true);
     
     // Generate XML
@@ -232,7 +246,23 @@ export default function DocumentUploadModal({ isOpen, onClose, file }: DocumentU
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
     
+    // Create processed document object
+    const docType = DOCUMENT_TYPES[selectedType];
+    const processedDoc: ProcessedDocument = {
+      id: Date.now().toString(),
+      fileName: file.name,
+      fileSize: file.size,
+      documentType: selectedType,
+      documentTypeLabel: docType.label,
+      documentTypeIcon: docType.icon,
+      fields: { ...fieldValues },
+      uploadedAt: new Date(),
+    };
+    
     setIsSubmitting(false);
+    
+    // Call onComplete with processed document
+    onComplete(processedDoc);
     onClose();
     
     // Reset state

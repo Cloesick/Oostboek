@@ -4,7 +4,7 @@ import { Calendar, MessageCircle, FileText, Clock, ArrowRight, Loader2, Upload, 
 import { useAuthStore } from '../stores/authStore';
 import { api } from '../services/api';
 import type { Appointment } from '../types/api';
-import DocumentUploadModal from '../components/DocumentUploadModal';
+import DocumentUploadModal, { ProcessedDocument } from '../components/DocumentUploadModal';
 
 
 export default function DashboardPage() {
@@ -262,7 +262,7 @@ function DocumentItem({
 function UploadZone() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState<{ name: string; size: string; rawFile?: File }[]>([]);
+  const [processedDocuments, setProcessedDocuments] = useState<ProcessedDocument[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<{ name: string; size: string; rawFile?: File } | null>(null);
 
@@ -305,11 +305,11 @@ function UploadZone() {
 
   const handleModalClose = () => {
     setModalOpen(false);
-    // Add file to uploaded list when modal closes (after successful processing)
-    if (selectedFile) {
-      setUploadedFiles(prev => [...prev, selectedFile]);
-    }
     setSelectedFile(null);
+  };
+
+  const handleDocumentComplete = (doc: ProcessedDocument) => {
+    setProcessedDocuments(prev => [...prev, doc]);
   };
 
   const formatFileSize = (bytes: number): string => {
@@ -318,26 +318,31 @@ function UploadZone() {
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   };
 
-  const removeFile = (index: number) => {
-    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+  const removeDocument = (id: string) => {
+    setProcessedDocuments(prev => prev.filter(doc => doc.id !== id));
   };
 
   return (
     <>
       <div>
-        {/* Uploaded files list */}
-        {uploadedFiles.length > 0 && (
+        {/* Processed documents list */}
+        {processedDocuments.length > 0 && (
           <div className="space-y-2 mb-3">
-            {uploadedFiles.map((file, index) => (
-              <div key={index} className="flex items-center justify-between p-2 bg-accent-50 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <File className="w-4 h-4 text-accent-600" />
-                  <span className="text-sm text-gray-700">{file.name}</span>
-                  <span className="text-xs text-gray-500">({file.size})</span>
+            {processedDocuments.map((doc) => (
+              <div key={doc.id} className="flex items-center justify-between p-3 bg-accent-50 rounded-lg border border-accent-200">
+                <div className="flex items-center gap-3">
+                  <span className="text-xl">{doc.documentTypeIcon}</span>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{doc.fileName}</p>
+                    <p className="text-xs text-gray-500">
+                      {doc.documentTypeLabel} • {doc.fileSize} • {doc.uploadedAt.toLocaleDateString('nl-BE')}
+                    </p>
+                  </div>
                 </div>
                 <button 
-                  onClick={() => removeFile(index)}
-                  className="p-1 hover:bg-accent-100 rounded transition-colors"
+                  onClick={() => removeDocument(doc.id)}
+                  className="p-1.5 hover:bg-accent-100 rounded transition-colors"
+                  title="Verwijderen"
                 >
                   <X className="w-4 h-4 text-gray-500" />
                 </button>
@@ -377,6 +382,7 @@ function UploadZone() {
       <DocumentUploadModal
         isOpen={modalOpen}
         onClose={handleModalClose}
+        onComplete={handleDocumentComplete}
         file={selectedFile}
       />
     </>
