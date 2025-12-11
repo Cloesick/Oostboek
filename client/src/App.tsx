@@ -18,6 +18,9 @@ import BegeleidingPage from './pages/BegeleidingPage';
 import FAQPage from './pages/FAQPage';
 import ProfileCompletionPage from './pages/ProfileCompletionPage';
 import NotFoundPage from './pages/NotFoundPage';
+import NewsPage from './pages/NewsPage';
+import VacanciesPage from './pages/VacanciesPage';
+import LinksPage from './pages/LinksPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore();
@@ -46,6 +49,9 @@ function App() {
       <Route path="/fiscaliteit" element={<FiscaliteitPage />} />
       <Route path="/begeleiding" element={<BegeleidingPage />} />
       <Route path="/faq" element={<FAQPage />} />
+      <Route path="/nieuws" element={<NewsPage />} />
+      <Route path="/vacatures" element={<VacanciesPage />} />
+      <Route path="/links" element={<LinksPage />} />
       <Route
         path="/complete-profile"
         element={

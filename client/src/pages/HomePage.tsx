@@ -341,7 +341,9 @@ export default function HomePage() {
                 <Link to="/boekhouding" className="block text-primary-300 hover:text-accent-400 transition-colors cursor-pointer">Boekhouding</Link>
                 <Link to="/fiscaliteit" className="block text-primary-300 hover:text-accent-400 transition-colors cursor-pointer">Fiscaliteit</Link>
                 <Link to="/begeleiding" className="block text-primary-300 hover:text-accent-400 transition-colors cursor-pointer">Begeleiding</Link>
-                <a href="#faq" className="block text-primary-300 hover:text-accent-400 transition-colors cursor-pointer">FAQ</a>
+                <Link to="/nieuws" className="block text-primary-300 hover:text-accent-400 transition-colors cursor-pointer">Nieuws</Link>
+                <Link to="/vacatures" className="block text-primary-300 hover:text-accent-400 transition-colors cursor-pointer">Vacatures</Link>
+                <Link to="/links" className="block text-primary-300 hover:text-accent-400 transition-colors cursor-pointer">Links</Link>
                 <Link to="/login" className="block text-primary-300 hover:text-accent-400 transition-colors cursor-pointer">Login</Link>
               </div>
             </div>

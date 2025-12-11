@@ -37,7 +37,9 @@ export default function Header() {
             <Link to="/boekhouding" className="nav-link">{t.nav.boekhouding}</Link>
             <Link to="/fiscaliteit" className="nav-link">{t.nav.fiscaliteit}</Link>
             <Link to="/begeleiding" className="nav-link">{t.nav.begeleiding}</Link>
-            <a href="/#faq" className="nav-link">FAQ</a>
+            <Link to="/nieuws" className="nav-link">Nieuws</Link>
+            <Link to="/vacatures" className="nav-link">Vacatures</Link>
+            <Link to="/links" className="nav-link">Links</Link>
             <a href="/#contact" className="nav-link">{t.nav.contact}</a>
           </nav>
           
@@ -85,13 +87,27 @@ export default function Header() {
               >
                 {t.nav.begeleiding}
               </Link>
-              <a 
-                href="/#faq" 
+              <Link 
+                to="/nieuws" 
                 className="px-4 py-3 rounded-lg hover:bg-primary-800 transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                FAQ
-              </a>
+                Nieuws
+              </Link>
+              <Link 
+                to="/vacatures" 
+                className="px-4 py-3 rounded-lg hover:bg-primary-800 transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Vacatures
+              </Link>
+              <Link 
+                to="/links" 
+                className="px-4 py-3 rounded-lg hover:bg-primary-800 transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Links
+              </Link>
               <a 
                 href="/#contact" 
                 className="px-4 py-3 rounded-lg hover:bg-primary-800 transition-colors"
