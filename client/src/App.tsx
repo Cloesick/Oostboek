@@ -16,6 +16,7 @@ import FiscaliteitPage from './pages/FiscaliteitPage';
 import BegeleidingPage from './pages/BegeleidingPage';
 import FAQPage from './pages/FAQPage';
 import ProfileCompletionPage from './pages/ProfileCompletionPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore();
@@ -83,8 +84,8 @@ function App() {
         }
       />
       
-      {/* Fallback */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      {/* 404 Not Found */}
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }

@@ -18,13 +18,28 @@ async function request<T>(
     ...options.headers,
   };
 
-  const response = await fetch(`${API_BASE}${endpoint}`, {
-    ...options,
-    headers,
-  });
+  try {
+    const response = await fetch(`${API_BASE}${endpoint}`, {
+      ...options,
+      headers,
+    });
 
-  const data = await response.json();
-  return data;
+    const data = await response.json();
+    
+    // Handle 401 Unauthorized - clear auth state
+    if (response.status === 401) {
+      localStorage.removeItem('oostboek-auth');
+      return { success: false, error: 'Sessie verlopen. Log opnieuw in.' };
+    }
+    
+    return data;
+  } catch (error) {
+    // Network error or server unreachable
+    return { 
+      success: false, 
+      error: 'Kan geen verbinding maken met de server. Controleer uw internetverbinding.' 
+    };
+  }
 }
 
 export const api = {
