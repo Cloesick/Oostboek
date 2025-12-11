@@ -4,11 +4,6 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 
-// Fallback DATABASE_URL for App Runner (env vars not being passed correctly)
-if (!process.env['DATABASE_URL']) {
-  process.env['DATABASE_URL'] = 'postgresql://postgres:hReAyZHFRw475Kh@oostboek-db.c1caaygo42i5.eu-central-1.rds.amazonaws.com:5432/postgres';
-}
-
 import { authRouter } from './routes/auth.js';
 import { appointmentRouter } from './routes/appointments.js';
 import { chatRouter } from './routes/chat.js';
