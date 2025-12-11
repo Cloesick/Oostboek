@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Calendar, Clock, User, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import type { Staff } from '../types/api';
 
@@ -21,6 +22,7 @@ const ROLE_LABELS: Record<string, string> = {
 };
 
 export default function AppointmentsPage() {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const [selectedStaff, setSelectedStaff] = useState<string | null>(null);
@@ -100,16 +102,10 @@ export default function AppointmentsPage() {
 
     if (response.success) {
       setSubmitSuccess(true);
-      // Reset form after short delay
+      // Redirect to dashboard after short delay
       setTimeout(() => {
-        setStep(1);
-        setSelectedService(null);
-        setSelectedStaff(null);
-        setSelectedDate(null);
-        setSelectedTime(null);
-        setTopic('');
-        setSubmitSuccess(false);
-      }, 3000);
+        navigate('/dashboard');
+      }, 2000);
     } else {
       setSubmitError(response.error || 'Er is iets misgegaan. Probeer het opnieuw.');
     }
