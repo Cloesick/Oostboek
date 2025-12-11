@@ -5,10 +5,12 @@ import { useAuthStore } from '../stores/authStore';
 import { api } from '../services/api';
 import type { Appointment } from '../types/api';
 import DocumentUploadModal, { ProcessedDocument } from '../components/DocumentUploadModal';
+import { useLanguage } from '../i18n/LanguageContext';
 
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
+  const { t } = useLanguage();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loadingAppointments, setLoadingAppointments] = useState(true);
 
@@ -31,10 +33,10 @@ export default function DashboardPage() {
       {/* Welcome */}
       <div className="bg-gradient-to-r from-primary-600 to-primary-700 rounded-2xl p-6 text-white">
         <h1 className="text-2xl font-bold mb-2">
-          Welkom, {user?.firstName}!
+          {t.dashboard.welcome}, {user?.firstName}!
         </h1>
         <p className="text-primary-100">
-          Wat wilt u vandaag doen?
+          {t.dashboard.whatToDo}
         </p>
       </div>
 
@@ -47,8 +49,8 @@ export default function DashboardPage() {
           <div className="w-12 h-12 bg-accent-100 rounded-xl flex items-center justify-center mb-4">
             <Calendar className="w-6 h-6 text-accent-600" />
           </div>
-          <h3 className="font-semibold text-gray-900 mb-1">Afspraak maken</h3>
-          <p className="text-sm text-gray-500">Plan een gesprek met onze specialisten</p>
+          <h3 className="font-semibold text-gray-900 mb-1">{t.dashboard.makeAppointment}</h3>
+          <p className="text-sm text-gray-500">{t.dashboard.makeAppointmentDesc}</p>
           <ArrowRight className="w-5 h-5 text-gray-400 mt-3 group-hover:text-primary-600 transition-colors" />
         </Link>
 
@@ -59,8 +61,8 @@ export default function DashboardPage() {
           <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center mb-4">
             <MessageCircle className="w-6 h-6 text-primary-600" />
           </div>
-          <h3 className="font-semibold text-gray-900 mb-1">Stel een vraag</h3>
-          <p className="text-sm text-gray-500">Krijg direct antwoord via onze AI-assistent</p>
+          <h3 className="font-semibold text-gray-900 mb-1">{t.dashboard.askQuestion}</h3>
+          <p className="text-sm text-gray-500">{t.dashboard.askQuestionDesc}</p>
           <ArrowRight className="w-5 h-5 text-gray-400 mt-3 group-hover:text-primary-600 transition-colors" />
         </Link>
       </div>
@@ -68,9 +70,9 @@ export default function DashboardPage() {
       {/* Upcoming Appointments */}
       <div className="card">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Komende afspraken</h2>
+          <h2 className="text-lg font-semibold text-gray-900">{t.dashboard.upcomingAppointments}</h2>
           <Link to="/appointments" className="text-sm text-primary-600 hover:text-primary-700">
-            Bekijk alle
+            {t.dashboard.viewAll}
           </Link>
         </div>
         
@@ -81,9 +83,9 @@ export default function DashboardPage() {
         ) : appointments.length === 0 ? (
           <div className="text-center py-8">
             <Clock className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-500 mb-4">Geen komende afspraken</p>
+            <p className="text-gray-500 mb-4">{t.dashboard.noAppointments}</p>
             <Link to="/appointments" className="btn-primary">
-              Plan een afspraak
+              {t.dashboard.planAppointment}
             </Link>
           </div>
         ) : (
@@ -115,7 +117,7 @@ export default function DashboardPage() {
                     ? 'bg-green-100 text-green-700' 
                     : 'bg-yellow-100 text-yellow-700'
                 }`}>
-                  {apt.status === 'CONFIRMED' ? 'Bevestigd' : 'In afwachting'}
+                  {apt.status === 'CONFIRMED' ? t.dashboard.confirmed : t.dashboard.pending}
                 </span>
               </div>
             ))}
@@ -130,10 +132,10 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Download className="w-5 h-5 text-primary-600" />
-              <h2 className="text-lg font-semibold text-gray-900">Ontvangen documenten</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t.dashboard.receivedDocuments}</h2>
             </div>
             <span className="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded-full">
-              Van Oostboek
+              {t.dashboard.fromOostboek}
             </span>
           </div>
           
@@ -154,7 +156,7 @@ export default function DashboardPage() {
           </div>
           
           <p className="text-xs text-gray-400 text-center">
-            Documenten van uw boekhouder
+            {t.dashboard.documentsFromAccountant}
           </p>
         </div>
 
@@ -163,10 +165,10 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Upload className="w-5 h-5 text-accent-600" />
-              <h2 className="text-lg font-semibold text-gray-900">Mijn uploads</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t.dashboard.myUploads}</h2>
             </div>
             <span className="text-xs bg-accent-100 text-accent-700 px-2 py-1 rounded-full">
-              Door u geüpload
+              {t.dashboard.uploadedByYou}
             </span>
           </div>
           
@@ -174,7 +176,7 @@ export default function DashboardPage() {
             {/* Placeholder - empty state or uploaded docs */}
             <div className="text-center py-4">
               <FileText className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-              <p className="text-sm text-gray-500">Nog geen documenten geüpload</p>
+              <p className="text-sm text-gray-500">{t.dashboard.noDocumentsUploaded}</p>
             </div>
           </div>
           
@@ -186,18 +188,18 @@ export default function DashboardPage() {
       {/* Quick Info Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <InfoCard
-          title="BTW Aangifte"
-          description="Volgende deadline: 20 januari 2025"
+          title={t.dashboard.vatReturn}
+          description={`${t.dashboard.nextDeadline}: 20 januari 2025`}
           status="upcoming"
         />
         <InfoCard
-          title="Jaarrekening 2024"
-          description="In behandeling"
+          title={`${t.dashboard.annualAccounts} 2024`}
+          description={t.dashboard.inProgress}
           status="processing"
         />
         <InfoCard
-          title="Facturen"
-          description="3 facturen wachten op goedkeuring"
+          title={t.dashboard.invoices}
+          description={`3 ${t.dashboard.invoicesWaiting}`}
           status="action"
         />
       </div>
@@ -260,6 +262,7 @@ function DocumentItem({
 }
 
 function UploadZone() {
+  const { t } = useLanguage();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [processedDocuments, setProcessedDocuments] = useState<ProcessedDocument[]>([]);
@@ -342,7 +345,7 @@ function UploadZone() {
                 <button 
                   onClick={() => removeDocument(doc.id)}
                   className="p-1.5 hover:bg-accent-100 rounded transition-colors"
-                  title="Verwijderen"
+                  title={t.dashboard.delete}
                 >
                   <X className="w-4 h-4 text-gray-500" />
                 </button>
@@ -365,9 +368,9 @@ function UploadZone() {
         >
           <Upload className={`w-8 h-8 mx-auto mb-2 ${isDragging ? 'text-accent-500' : 'text-gray-400'}`} />
           <p className="text-sm text-gray-600 mb-1">
-            <span className="font-medium text-accent-600">Klik om te uploaden</span> of sleep bestanden hierheen
+            <span className="font-medium text-accent-600">{t.dashboard.clickToUpload}</span> {t.dashboard.orDragFiles}
           </p>
-          <p className="text-xs text-gray-400">PDF, JPG, PNG, CSV tot 10MB</p>
+          <p className="text-xs text-gray-400">{t.dashboard.fileTypes}</p>
           <input
             ref={fileInputRef}
             type="file"

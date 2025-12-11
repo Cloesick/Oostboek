@@ -3,6 +3,7 @@ import { Calendar, Clock, User, ChevronLeft, ChevronRight, Loader2 } from 'lucid
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import type { Staff } from '../types/api';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const SERVICE_TYPES = [
   { id: 'VAT_ADMINISTRATION', label: 'BTW Administratie', duration: 30 },
@@ -23,6 +24,7 @@ const ROLE_LABELS: Record<string, string> = {
 
 export default function AppointmentsPage() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [step, setStep] = useState(1);
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const [selectedStaff, setSelectedStaff] = useState<string | null>(null);
@@ -113,7 +115,7 @@ export default function AppointmentsPage() {
 
   return (
     <div className="pb-20 md:pb-0">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Afspraak maken</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">{t.appointments.title}</h1>
 
       {/* Progress Steps */}
       <div className="flex items-center justify-between mb-8 max-w-md">
@@ -143,7 +145,7 @@ export default function AppointmentsPage() {
       {step === 1 && (
         <div className="card">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Waarvoor wilt u een afspraak maken?
+            {t.appointments.selectSpecialization}
           </h2>
           <div className="grid gap-3">
             {SERVICE_TYPES.map((service) => (
@@ -179,10 +181,10 @@ export default function AppointmentsPage() {
             onClick={() => setStep(1)}
             className="text-sm text-gray-500 hover:text-gray-700 mb-4 flex items-center"
           >
-            <ChevronLeft className="w-4 h-4 mr-1" /> Terug
+            <ChevronLeft className="w-4 h-4 mr-1" /> {t.documentUpload.back}
           </button>
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Kies een medewerker
+            {t.appointments.selectSpecialist}
           </h2>
           
           {loadingStaff ? (
@@ -243,10 +245,10 @@ export default function AppointmentsPage() {
             onClick={() => setStep(2)}
             className="text-sm text-gray-500 hover:text-gray-700 mb-4 flex items-center"
           >
-            <ChevronLeft className="w-4 h-4 mr-1" /> Terug
+            <ChevronLeft className="w-4 h-4 mr-1" /> {t.documentUpload.back}
           </button>
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Kies een datum en tijd
+            {t.appointments.chooseDateTime}
           </h2>
 
           {/* Calendar */}
@@ -340,10 +342,10 @@ export default function AppointmentsPage() {
             onClick={() => setStep(3)}
             className="text-sm text-gray-500 hover:text-gray-700 mb-4 flex items-center"
           >
-            <ChevronLeft className="w-4 h-4 mr-1" /> Terug
+            <ChevronLeft className="w-4 h-4 mr-1" /> {t.documentUpload.back}
           </button>
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Bevestig uw afspraak
+            {t.appointments.confirmAppointment}
           </h2>
 
           {/* Summary */}
@@ -396,7 +398,7 @@ export default function AppointmentsPage() {
 
           {submitSuccess ? (
             <div className="bg-green-50 text-green-700 px-4 py-3 rounded-lg text-center">
-              <p className="font-medium">Afspraak succesvol aangevraagd!</p>
+              <p className="font-medium">{t.appointments.appointmentConfirmed}</p>
               <p className="text-sm mt-1">U ontvangt een bevestiging per e-mail.</p>
             </div>
           ) : (
@@ -405,7 +407,7 @@ export default function AppointmentsPage() {
               disabled={!topic || submitting}
               className="btn-primary w-full py-3"
             >
-              {submitting ? 'Bezig met aanvragen...' : 'Afspraak bevestigen'}
+              {submitting ? t.documentUpload.uploading : t.appointments.confirmAppointment}
             </button>
           )}
         </div>

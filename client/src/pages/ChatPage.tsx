@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Calendar, Phone, ExternalLink, FileText, Link2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface ChatLink {
   label: string;
@@ -211,6 +212,7 @@ const KNOWLEDGE_BASE = {
 };
 
 export default function ChatPage() {
+  const { t } = useLanguage();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -394,12 +396,12 @@ export default function ChatPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Chat</h1>
-          <p className="text-sm text-gray-500">AI-assistent voor snelle antwoorden</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t.chat.title}</h1>
+          <p className="text-sm text-gray-500">{t.chat.subtitle}</p>
         </div>
         <Link to="/appointments" className="btn-secondary">
           <Calendar className="w-4 h-4 mr-2" />
-          Afspraak maken
+          {t.chat.makeAppointment}
         </Link>
       </div>
 
@@ -451,7 +453,7 @@ export default function ChatPage() {
                 <div className="mt-3 space-y-1.5">
                   <p className="text-xs font-medium text-gray-500 flex items-center gap-1">
                     <Link2 className="w-3 h-3" />
-                    Relevante links:
+                    {t.chat.relevantLinks}
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {message.links.map((link, idx) => (
@@ -512,7 +514,7 @@ export default function ChatPage() {
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-600 text-white text-sm rounded-lg hover:bg-primary-700 transition-colors"
                     >
                       <Calendar className="w-4 h-4" />
-                      Afspraak maken
+                      {t.chat.makeAppointment}
                     </Link>
                   )}
                   {(message.showActions === 'contact' || message.showActions === 'both') && (
@@ -521,7 +523,7 @@ export default function ChatPage() {
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-accent-500 text-white text-sm rounded-lg hover:bg-accent-600 transition-colors"
                     >
                       <Phone className="w-4 h-4" />
-                      Contact opnemen
+                      {t.chat.contactUs}
                     </a>
                   )}
                 </div>
@@ -555,7 +557,7 @@ export default function ChatPage() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="Typ uw vraag..."
+          placeholder={t.chat.typeQuestion}
           className="input flex-1"
         />
         <button
@@ -570,14 +572,14 @@ export default function ChatPage() {
       {/* Quick Actions */}
       <div className="mt-3 flex flex-wrap gap-2">
         {[
-          'BTW aangifte',
-          'Starter worden',
-          'Jaarrekening',
-          'Vennootschapsbelasting',
-          'GDPR privacy',
-          'Tarieven',
-          '30bis aannemer',
-          'Nuttige links',
+          t.chat.vatReturn,
+          t.chat.becomeStarter,
+          t.chat.annualAccounts,
+          t.chat.corporateTax,
+          t.chat.gdprPrivacy,
+          t.chat.pricing,
+          t.chat.contractor30bis,
+          t.chat.usefulLinks,
         ].map((action) => (
           <button
             key={action}
