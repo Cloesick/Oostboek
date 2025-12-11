@@ -1,10 +1,13 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
-import { ArrowRight, CheckCircle, ChevronDown } from 'lucide-react';
+import { ArrowRight, CheckCircle, ChevronDown, Calendar, Clock } from 'lucide-react';
 import Header from '../components/Header';
 import { ContactSection } from '../components/ContactForm';
 import TeamSection from '../components/TeamSection';
 import { useLanguage } from '../i18n/LanguageContext';
+import { useAuthStore } from '../stores/authStore';
+import { api } from '../services/api';
+import type { Appointment } from '../types/api';
 
 // Declare Calendly on window for TypeScript
 declare global {
@@ -18,8 +21,24 @@ declare global {
 
 export default function HomePage() {
   const { t } = useLanguage();
+  const { isAuthenticated } = useAuthStore();
   const [calendlyLoaded, setCalendlyLoaded] = useState(false);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const calendlyRef = useRef<HTMLDivElement>(null);
+
+  // Fetch appointments for logged-in users
+  useEffect(() => {
+    if (isAuthenticated) {
+      api.getAppointments().then((response) => {
+        if (response.success && response.data) {
+          const upcoming = response.data.filter(
+            (apt) => apt.status === 'PENDING' || apt.status === 'CONFIRMED'
+          );
+          setAppointments(upcoming.slice(0, 3));
+        }
+      });
+    }
+  }, [isAuthenticated]);
   
   // Lazy load Calendly when section comes into view
   useEffect(() => {
@@ -63,6 +82,49 @@ export default function HomePage() {
     <div className="min-h-screen bg-surface-50 font-body">
       {/* Header */}
       <Header />
+
+      {/* Upcoming Appointments Banner for logged-in users */}
+      {isAuthenticated && appointments.length > 0 && (
+        <section className="bg-accent-50 border-b border-accent-200">
+          <div className="max-w-7xl mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-accent-600" />
+                  <span className="font-semibold text-accent-900">Komende afspraken</span>
+                </div>
+                <div className="hidden md:flex items-center gap-4">
+                  {appointments.map((apt) => (
+                    <div key={apt.id} className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-accent-200">
+                      <Clock className="w-4 h-4 text-accent-500" />
+                      <span className="text-sm text-gray-700">
+                        {new Date(apt.scheduledAt).toLocaleDateString('nl-BE', {
+                          weekday: 'short',
+                          day: 'numeric',
+                          month: 'short',
+                        })}{' '}
+                        om{' '}
+                        {new Date(apt.scheduledAt).toLocaleTimeString('nl-BE', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </span>
+                      <span className="text-xs text-gray-500">- {apt.topic}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <Link
+                to="/dashboard"
+                className="text-sm text-accent-700 hover:text-accent-800 font-medium flex items-center gap-1"
+              >
+                Bekijk alle
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Hero - Split layout with data visualization */}
       <section className="bg-primary-900">
