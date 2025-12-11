@@ -4,7 +4,12 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 
-// Log environment for debugging (v2)
+// Fallback DATABASE_URL for App Runner (env vars not being passed correctly)
+if (!process.env['DATABASE_URL']) {
+  process.env['DATABASE_URL'] = 'postgresql://postgres:hReAyZHFRw475Kh@oostboek-db.c1caaygo42i5.eu-central-1.rds.amazonaws.com:5432/postgres';
+}
+
+// Log environment for debugging (v3)
 console.log('DATABASE_URL exists:', !!process.env['DATABASE_URL']);
 console.log('NODE_ENV:', process.env['NODE_ENV']);
 console.log('Environment loaded at:', new Date().toISOString());
