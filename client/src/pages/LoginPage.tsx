@@ -29,10 +29,20 @@ export default function LoginPage() {
         login(response.data.user, response.data.token);
         navigate('/dashboard');
       } else {
-        setError(response.error || 'Inloggen mislukt');
+        // Map backend errors to translated messages
+        const errorMsg = response.error?.toLowerCase() || '';
+        if (errorMsg.includes('invalid') || errorMsg.includes('credentials')) {
+          setError(t.auth.invalidCredentials);
+        } else if (errorMsg.includes('sessie') || errorMsg.includes('session')) {
+          setError(t.auth.sessionExpired);
+        } else if (errorMsg.includes('verbinding') || errorMsg.includes('connect')) {
+          setError(t.auth.networkError);
+        } else {
+          setError(t.auth.loginFailed);
+        }
       }
-    } catch (err) {
-      setError(t.auth.error);
+    } catch {
+      setError(t.auth.networkError);
     } finally {
       setLoading(false);
     }

@@ -146,6 +146,12 @@ export const translations = {
       gdprRequired: 'U moet akkoord gaan met de privacyvoorwaarden',
       registering: 'Account aanmaken...',
       error: 'Er is een fout opgetreden. Probeer het opnieuw.',
+      sessionExpired: 'Sessie verlopen. Log opnieuw in.',
+      networkError: 'Kan geen verbinding maken met de server. Controleer uw internetverbinding.',
+      invalidCredentials: 'Ongeldige inloggegevens. Controleer uw e-mail en wachtwoord.',
+      emailExists: 'Dit e-mailadres is al geregistreerd.',
+      loginFailed: 'Inloggen mislukt. Probeer het opnieuw.',
+      registerFailed: 'Registratie mislukt. Probeer het opnieuw.',
     },
 
     // Pages
@@ -344,6 +350,12 @@ export const translations = {
       gdprRequired: 'You must agree to the privacy policy',
       registering: 'Creating account...',
       error: 'An error occurred. Please try again.',
+      sessionExpired: 'Session expired. Please log in again.',
+      networkError: 'Cannot connect to server. Please check your internet connection.',
+      invalidCredentials: 'Invalid credentials. Please check your email and password.',
+      emailExists: 'This email address is already registered.',
+      loginFailed: 'Login failed. Please try again.',
+      registerFailed: 'Registration failed. Please try again.',
     },
 
     // Pages

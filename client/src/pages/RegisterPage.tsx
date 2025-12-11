@@ -65,10 +65,18 @@ export default function RegisterPage() {
         login(response.data.user, response.data.token);
         navigate('/complete-profile');
       } else {
-        setError(response.error || 'Registratie mislukt');
+        // Map backend errors to translated messages
+        const errorMsg = response.error?.toLowerCase() || '';
+        if (errorMsg.includes('already') || errorMsg.includes('exists') || errorMsg.includes('409')) {
+          setError(t.auth.emailExists);
+        } else if (errorMsg.includes('verbinding') || errorMsg.includes('connect')) {
+          setError(t.auth.networkError);
+        } else {
+          setError(t.auth.registerFailed);
+        }
       }
-    } catch (err) {
-      setError(t.auth.error);
+    } catch {
+      setError(t.auth.networkError);
     } finally {
       setLoading(false);
     }
