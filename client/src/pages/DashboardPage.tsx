@@ -4,6 +4,7 @@ import { Calendar, MessageCircle, FileText, Clock, ArrowRight, Loader2, Upload, 
 import { useAuthStore } from '../stores/authStore';
 import { api } from '../services/api';
 import type { Appointment } from '../types/api';
+import DocumentUploadModal from '../components/DocumentUploadModal';
 
 
 export default function DashboardPage() {
@@ -261,7 +262,9 @@ function DocumentItem({
 function UploadZone() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState<{ name: string; size: string }[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<{ name: string; size: string; rawFile?: File }[]>([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<{ name: string; size: string; rawFile?: File } | null>(null);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -287,12 +290,26 @@ function UploadZone() {
   };
 
   const handleFiles = (files: globalThis.File[]) => {
-    const newFiles = files.map(file => ({
-      name: file.name,
-      size: formatFileSize(file.size),
-    }));
-    setUploadedFiles(prev => [...prev, ...newFiles]);
-    // TODO: Actually upload files to server
+    // Process first file and open modal
+    if (files.length > 0) {
+      const file = files[0];
+      const fileData = {
+        name: file.name,
+        size: formatFileSize(file.size),
+        rawFile: file,
+      };
+      setSelectedFile(fileData);
+      setModalOpen(true);
+    }
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+    // Add file to uploaded list when modal closes (after successful processing)
+    if (selectedFile) {
+      setUploadedFiles(prev => [...prev, selectedFile]);
+    }
+    setSelectedFile(null);
   };
 
   const formatFileSize = (bytes: number): string => {
@@ -306,54 +323,62 @@ function UploadZone() {
   };
 
   return (
-    <div>
-      {/* Uploaded files list */}
-      {uploadedFiles.length > 0 && (
-        <div className="space-y-2 mb-3">
-          {uploadedFiles.map((file, index) => (
-            <div key={index} className="flex items-center justify-between p-2 bg-accent-50 rounded-lg">
-              <div className="flex items-center gap-2">
-                <File className="w-4 h-4 text-accent-600" />
-                <span className="text-sm text-gray-700">{file.name}</span>
-                <span className="text-xs text-gray-500">({file.size})</span>
+    <>
+      <div>
+        {/* Uploaded files list */}
+        {uploadedFiles.length > 0 && (
+          <div className="space-y-2 mb-3">
+            {uploadedFiles.map((file, index) => (
+              <div key={index} className="flex items-center justify-between p-2 bg-accent-50 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <File className="w-4 h-4 text-accent-600" />
+                  <span className="text-sm text-gray-700">{file.name}</span>
+                  <span className="text-xs text-gray-500">({file.size})</span>
+                </div>
+                <button 
+                  onClick={() => removeFile(index)}
+                  className="p-1 hover:bg-accent-100 rounded transition-colors"
+                >
+                  <X className="w-4 h-4 text-gray-500" />
+                </button>
               </div>
-              <button 
-                onClick={() => removeFile(index)}
-                className="p-1 hover:bg-accent-100 rounded transition-colors"
-              >
-                <X className="w-4 h-4 text-gray-500" />
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
 
-      {/* Drop zone */}
-      <div
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        onClick={() => fileInputRef.current?.click()}
-        className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors ${
-          isDragging 
-            ? 'border-accent-500 bg-accent-50' 
-            : 'border-gray-300 hover:border-accent-400 hover:bg-gray-50'
-        }`}
-      >
-        <Upload className={`w-8 h-8 mx-auto mb-2 ${isDragging ? 'text-accent-500' : 'text-gray-400'}`} />
-        <p className="text-sm text-gray-600 mb-1">
-          <span className="font-medium text-accent-600">Klik om te uploaden</span> of sleep bestanden hierheen
-        </p>
-        <p className="text-xs text-gray-400">PDF, JPG, PNG tot 10MB</p>
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          accept=".pdf,.jpg,.jpeg,.png"
-          onChange={handleFileSelect}
-          className="hidden"
-        />
+        {/* Drop zone */}
+        <div
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          onClick={() => fileInputRef.current?.click()}
+          className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors ${
+            isDragging 
+              ? 'border-accent-500 bg-accent-50' 
+              : 'border-gray-300 hover:border-accent-400 hover:bg-gray-50'
+          }`}
+        >
+          <Upload className={`w-8 h-8 mx-auto mb-2 ${isDragging ? 'text-accent-500' : 'text-gray-400'}`} />
+          <p className="text-sm text-gray-600 mb-1">
+            <span className="font-medium text-accent-600">Klik om te uploaden</span> of sleep bestanden hierheen
+          </p>
+          <p className="text-xs text-gray-400">PDF, JPG, PNG, CSV tot 10MB</p>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".pdf,.jpg,.jpeg,.png,.csv,.xlsx,.xls"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
+        </div>
       </div>
-    </div>
+
+      {/* Document Upload Modal */}
+      <DocumentUploadModal
+        isOpen={modalOpen}
+        onClose={handleModalClose}
+        file={selectedFile}
+      />
+    </>
   );
 }
