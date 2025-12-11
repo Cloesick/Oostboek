@@ -9,11 +9,6 @@ if (!process.env['DATABASE_URL']) {
   process.env['DATABASE_URL'] = 'postgresql://postgres:hReAyZHFRw475Kh@oostboek-db.c1caaygo42i5.eu-central-1.rds.amazonaws.com:5432/postgres';
 }
 
-// Log environment for debugging (v3)
-console.log('DATABASE_URL exists:', !!process.env['DATABASE_URL']);
-console.log('NODE_ENV:', process.env['NODE_ENV']);
-console.log('Environment loaded at:', new Date().toISOString());
-
 import { authRouter } from './routes/auth.js';
 import { appointmentRouter } from './routes/appointments.js';
 import { chatRouter } from './routes/chat.js';
