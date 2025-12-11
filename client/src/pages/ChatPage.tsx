@@ -435,6 +435,12 @@ export default function ChatPage() {
   const [questionCount, setQuestionCount] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Reset messages when language changes
+  useEffect(() => {
+    setMessages([getInitialMessage()]);
+    setQuestionCount(0);
+  }, [language]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
