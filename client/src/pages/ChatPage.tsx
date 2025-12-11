@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Calendar, Phone, ExternalLink, FileText, Link2 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 interface ChatLink {
   label: string;
@@ -210,7 +210,6 @@ const KNOWLEDGE_BASE = {
 };
 
 export default function ChatPage() {
-  const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -273,12 +272,27 @@ export default function ChatPage() {
     const lower = userInput.toLowerCase();
     setQuestionCount(prev => prev + 1);
 
-    // Special case: direct appointment request
-    if (lower.includes('afspraak') || lower.includes('appointment') || lower.includes('gesprek maken')) {
-      navigate('/appointments');
+    // Special case: affirmative response (ja/yes) - direct to Calendly
+    if (lower === 'ja' || lower === 'yes' || lower === 'ok' || lower === 'oké' || lower === 'graag' || lower === 'ja graag') {
       return {
-        content: '📅 Ik stuur u door naar onze afsprakenpagina waar u direct een tijdslot kunt kiezen met een van onze specialisten.',
+        content: '📅 **Perfect!** Klik hieronder om direct een afspraak in te plannen via Calendly. Kies een tijdstip dat u het beste uitkomt.',
         showActions: undefined,
+        links: [
+          { label: '📅 Plan afspraak via Calendly', url: 'https://calendly.com/oostboek/kennismaking', type: 'external' },
+          { label: 'Of bel ons: 050/45 70 31', url: 'tel:+3250457031', type: 'external' },
+        ],
+      };
+    }
+
+    // Special case: direct appointment request
+    if (lower.includes('afspraak') || lower.includes('appointment') || lower.includes('gesprek maken') || lower.includes('calendly')) {
+      return {
+        content: '📅 **Afspraak maken**\n\nU kunt direct een afspraak inplannen via Calendly. Kies een tijdstip dat u het beste uitkomt voor een vrijblijvend kennismakingsgesprek.',
+        showActions: undefined,
+        links: [
+          { label: '📅 Plan afspraak via Calendly', url: 'https://calendly.com/oostboek/kennismaking', type: 'external' },
+          { label: 'Contactformulier', url: '/#contact', type: 'internal' },
+        ],
       };
     }
 
