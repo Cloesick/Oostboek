@@ -375,6 +375,14 @@ function FAQAccordion() {
     { question: t.faqItems.q6, answer: t.faqItems.a6 },
     { question: t.faqItems.q7, answer: t.faqItems.a7 },
     { question: t.faqItems.q8, answer: t.faqItems.a8 },
+    { question: t.faqItems.q9, answer: t.faqItems.a9 },
+    { question: t.faqItems.q10, answer: t.faqItems.a10 },
+    { question: t.faqItems.q11, answer: t.faqItems.a11 },
+    { question: t.faqItems.q12, answer: t.faqItems.a12 },
+    { question: t.faqItems.q13, answer: t.faqItems.a13 },
+    { question: t.faqItems.q14, answer: t.faqItems.a14 },
+    { question: t.faqItems.q15, answer: t.faqItems.a15 },
+    { question: t.faqItems.q16, answer: t.faqItems.a16 },
   ];
 
   return (
