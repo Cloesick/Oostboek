@@ -18,7 +18,7 @@ const isDev = process.env['NODE_ENV'] !== 'production';
 
 // Security middleware
 app.use(helmet({
-  contentSecurityPolicy: isDev ? false : undefined, // Disable CSP in dev to avoid Chrome DevTools noise
+  contentSecurityPolicy: isDev ? false : true,
 }));
 app.use(cors({
   origin: process.env['CLIENT_URL'] ?? 'http://localhost:5173',

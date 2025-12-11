@@ -51,7 +51,7 @@ router.post('/sessions', async (req, res, next) => {
         sessionId: session.id,
         role: 'ASSISTANT',
         content: 'Welkom bij Oostboek! Hoe kan ik u vandaag helpen? Ik kan u informatie geven over onze diensten, BTW-administratie, fiscale vragen, of u helpen een afspraak te maken.',
-        sources: [],
+        sources: '',
       },
     });
     
@@ -115,7 +115,7 @@ router.post('/sessions/:id/messages', async (req, res, next) => {
         sessionId,
         role: 'USER',
         content,
-        sources: [],
+        sources: '',
       },
     });
     
@@ -139,7 +139,7 @@ router.post('/sessions/:id/messages', async (req, res, next) => {
         data: {
           status: 'ESCALATED',
           escalatedAt: new Date(),
-          escalationReason: aiResponse.escalationReason,
+          escalationReason: aiResponse.escalationReason ?? null,
         },
       });
     }
@@ -160,7 +160,7 @@ router.post('/sessions/:id/messages', async (req, res, next) => {
 // Placeholder response generator (replace with Azure OpenAI)
 function generatePlaceholderResponse(userMessage: string): {
   content: string;
-  sources: string[];
+  sources: string;
   shouldEscalate: boolean;
   escalationReason?: string;
 } {
@@ -175,7 +175,7 @@ function generatePlaceholderResponse(userMessage: string): {
   ) {
     return {
       content: 'Ik begrijp dat dit dringend is. Ik verbind u door met een medewerker die u persoonlijk kan helpen. U kunt ook direct een afspraak maken via de "Afspraak maken" knop.',
-      sources: [],
+      sources: '',
       shouldEscalate: true,
       escalationReason: 'Urgent request detected',
     };
@@ -185,7 +185,7 @@ function generatePlaceholderResponse(userMessage: string): {
   if (lowerMessage.includes('btw') || lowerMessage.includes('vat')) {
     return {
       content: 'Voor BTW-administratie bieden wij volledige ondersteuning. De BTW-aangifte moet maandelijks of driemaandelijks worden ingediend, afhankelijk van uw omzet. Wilt u een afspraak maken om uw specifieke situatie te bespreken?',
-      sources: ['FAQ: BTW-administratie'],
+      sources: 'FAQ: BTW-administratie',
       shouldEscalate: false,
     };
   }
@@ -193,7 +193,7 @@ function generatePlaceholderResponse(userMessage: string): {
   if (lowerMessage.includes('factuur') || lowerMessage.includes('invoice')) {
     return {
       content: 'Facturen moeten in België 10 jaar bewaard worden. U kunt uw facturen uploaden via de "Documenten" sectie in uw dashboard. Wij ondersteunen ook Peppol e-facturatie.',
-      sources: ['FAQ: Factuurbeheer', 'Belgische wetgeving'],
+      sources: 'FAQ: Factuurbeheer, Belgische wetgeving',
       shouldEscalate: false,
     };
   }
@@ -201,7 +201,7 @@ function generatePlaceholderResponse(userMessage: string): {
   if (lowerMessage.includes('afspraak') || lowerMessage.includes('appointment')) {
     return {
       content: 'U kunt eenvoudig een afspraak maken via de "Afspraak maken" knop in het menu. Kies het type dienst, selecteer een beschikbare medewerker en tijdslot, en vul het intakeformulier in.',
-      sources: [],
+      sources: '',
       shouldEscalate: false,
     };
   }
@@ -209,7 +209,7 @@ function generatePlaceholderResponse(userMessage: string): {
   // Default response
   return {
     content: 'Bedankt voor uw vraag. Ik help u graag verder. Kunt u wat meer details geven over wat u precies wilt weten? Of wilt u direct een afspraak maken met een van onze specialisten?',
-    sources: [],
+    sources: '',
     shouldEscalate: false,
   };
 }

@@ -25,9 +25,9 @@ router.post('/', async (req, res, next) => {
       data: {
         name: data.name,
         email: data.email,
-        phone: data.phone,
-        company: data.company,
-        service: data.service,
+        phone: data.phone ?? null,
+        company: data.company ?? null,
+        service: data.service ?? null,
         message: data.message,
         source: data.source,
       },
