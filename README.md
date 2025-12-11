@@ -10,7 +10,13 @@ A mobile-first Progressive Web Application (PWA) for Oostboek accounting firm, p
 - **Auth**: JWT + bcrypt (MFA-ready)
 - **PWA**: Workbox service worker
 
-## Quick Start
+## Production URLs
+
+- **Frontend**: https://oostboek.be (Vercel)
+- **Backend API**: https://3kxjm2mtcj.eu-central-1.awsapprunner.com (AWS App Runner)
+- **Database**: AWS RDS PostgreSQL (eu-central-1)
+
+## Quick Start (Development)
 
 ```bash
 # Install dependencies
@@ -69,7 +75,19 @@ oostboek/
 - Data retention policies (10-year invoice storage)
 - Right to erasure implementation
 - Audit logging for data access
-- EU data residency (Azure West Europe)
+- EU data residency (AWS eu-central-1)
+
+## Deployment
+
+### Frontend (Vercel)
+Automatic deployments from `main` branch via Vercel GitHub integration.
+
+### Backend (AWS App Runner)
+Automatic deployments from `main` branch. Environment variables configured in App Runner console:
+- `DATABASE_URL` - PostgreSQL connection string
+- `NODE_ENV` - production
+- `JWT_SECRET` - Authentication secret
+- `CLIENT_URL` - Frontend URL for CORS
 
 ## License
 
