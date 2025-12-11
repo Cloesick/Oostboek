@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../lib/prisma.js';
 
 const SERVICE_TYPES = [
   'VAT_ADMINISTRATION',
@@ -31,7 +31,6 @@ import { authenticate } from '../middleware/auth.js';
 import { AppError } from '../middleware/errorHandler.js';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 // All appointment routes require authentication
 router.use(authenticate);
@@ -147,8 +146,8 @@ router.get('/staff', async (req, res, next) => {
       const requiredSpecs = SERVICE_TO_SPECIALIZATION[serviceType] || [];
       
       if (requiredSpecs.length > 0) {
-        staff = staff.filter(s => {
-          const staffSpecs = s.specializations.split(',').map(sp => sp.trim().toLowerCase());
+        staff = staff.filter((s: { specializations: string }) => {
+          const staffSpecs = s.specializations.split(',').map((sp: string) => sp.trim().toLowerCase());
           return requiredSpecs.some(req => staffSpecs.includes(req.toLowerCase()));
         });
       }
