@@ -1,9 +1,28 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, MessageCircle, FileText, Clock, ArrowRight } from 'lucide-react';
+import { Calendar, MessageCircle, FileText, Clock, ArrowRight, Loader2 } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
+import { api } from '../services/api';
+import type { Appointment } from '../types/api';
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [loadingAppointments, setLoadingAppointments] = useState(true);
+
+  useEffect(() => {
+    api.getAppointments()
+      .then((response) => {
+        if (response.success && response.data) {
+          // Filter to only upcoming appointments (not cancelled/completed)
+          const upcoming = response.data.filter(
+            (apt) => apt.status === 'PENDING' || apt.status === 'CONFIRMED'
+          );
+          setAppointments(upcoming);
+        }
+      })
+      .finally(() => setLoadingAppointments(false));
+  }, []);
 
   return (
     <div className="space-y-6 pb-20 md:pb-0">
@@ -53,14 +72,53 @@ export default function DashboardPage() {
           </Link>
         </div>
         
-        {/* Empty state */}
-        <div className="text-center py-8">
-          <Clock className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500 mb-4">Geen komende afspraken</p>
-          <Link to="/appointments" className="btn-primary">
-            Plan een afspraak
-          </Link>
-        </div>
+        {loadingAppointments ? (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="w-6 h-6 animate-spin text-primary-600" />
+          </div>
+        ) : appointments.length === 0 ? (
+          <div className="text-center py-8">
+            <Clock className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+            <p className="text-gray-500 mb-4">Geen komende afspraken</p>
+            <Link to="/appointments" className="btn-primary">
+              Plan een afspraak
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {appointments.slice(0, 3).map((apt) => (
+              <div key={apt.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
+                    <Calendar className="w-5 h-5 text-primary-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">{apt.topic}</p>
+                    <p className="text-sm text-gray-500">
+                      {new Date(apt.scheduledAt).toLocaleDateString('nl-BE', {
+                        weekday: 'short',
+                        day: 'numeric',
+                        month: 'short',
+                      })}{' '}
+                      om{' '}
+                      {new Date(apt.scheduledAt).toLocaleTimeString('nl-BE', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </p>
+                  </div>
+                </div>
+                <span className={`text-xs px-2 py-1 rounded-full ${
+                  apt.status === 'CONFIRMED' 
+                    ? 'bg-green-100 text-green-700' 
+                    : 'bg-yellow-100 text-yellow-700'
+                }`}>
+                  {apt.status === 'CONFIRMED' ? 'Bevestigd' : 'In afwachting'}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Recent Documents */}

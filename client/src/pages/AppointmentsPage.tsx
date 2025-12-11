@@ -72,16 +72,47 @@ export default function AppointmentsPage() {
     '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
   ];
 
-  const handleSubmit = () => {
-    // TODO: Call API to create appointment
-    alert('Afspraak aangevraagd! U ontvangt een bevestiging per e-mail.');
-    // Reset form
-    setStep(1);
-    setSelectedService(null);
-    setSelectedStaff(null);
-    setSelectedDate(null);
-    setSelectedTime(null);
-    setTopic('');
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!selectedService || !selectedStaff || !selectedDate || !selectedTime || !topic) {
+      return;
+    }
+
+    setSubmitting(true);
+    setSubmitError('');
+
+    // Combine date and time into ISO string
+    const [hours, minutes] = selectedTime.split(':').map(Number);
+    const scheduledAt = new Date(selectedDate);
+    scheduledAt.setHours(hours, minutes, 0, 0);
+
+    const response = await api.createAppointment({
+      staffId: selectedStaff,
+      serviceType: selectedService,
+      scheduledAt: scheduledAt.toISOString(),
+      topic,
+    });
+
+    setSubmitting(false);
+
+    if (response.success) {
+      setSubmitSuccess(true);
+      // Reset form after short delay
+      setTimeout(() => {
+        setStep(1);
+        setSelectedService(null);
+        setSelectedStaff(null);
+        setSelectedDate(null);
+        setSelectedTime(null);
+        setTopic('');
+        setSubmitSuccess(false);
+      }, 3000);
+    } else {
+      setSubmitError(response.error || 'Er is iets misgegaan. Probeer het opnieuw.');
+    }
   };
 
   return (
@@ -361,13 +392,26 @@ export default function AppointmentsPage() {
             />
           </div>
 
-          <button
-            onClick={handleSubmit}
-            disabled={!topic}
-            className="btn-primary w-full py-3"
-          >
-            Afspraak bevestigen
-          </button>
+          {submitError && (
+            <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-sm mb-4">
+              {submitError}
+            </div>
+          )}
+
+          {submitSuccess ? (
+            <div className="bg-green-50 text-green-700 px-4 py-3 rounded-lg text-center">
+              <p className="font-medium">Afspraak succesvol aangevraagd!</p>
+              <p className="text-sm mt-1">U ontvangt een bevestiging per e-mail.</p>
+            </div>
+          ) : (
+            <button
+              onClick={handleSubmit}
+              disabled={!topic || submitting}
+              className="btn-primary w-full py-3"
+            >
+              {submitting ? 'Bezig met aanvragen...' : 'Afspraak bevestigen'}
+            </button>
+          )}
         </div>
       )}
     </div>
