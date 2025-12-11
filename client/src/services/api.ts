@@ -1,12 +1,8 @@
+import type { ApiResponse } from '../types/api';
+
 const API_BASE = import.meta.env.PROD 
   ? 'https://3kxjm2mtcj.eu-central-1.awsapprunner.com/api' 
   : '/api';
-
-interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-}
 
 async function request<T>(
   endpoint: string,
