@@ -7,6 +7,7 @@ import type { Appointment } from '../types/api';
 import DocumentUploadModal, { ProcessedDocument } from '../components/DocumentUploadModal';
 import { useLanguage } from '../i18n/LanguageContext';
 
+// Dashboard with full NL/EN translation support
 export default function DashboardPage() {
   const { user } = useAuthStore();
   const { t } = useLanguage();
