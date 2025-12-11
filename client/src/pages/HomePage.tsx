@@ -47,7 +47,7 @@ export default function HomePage() {
       const widget = document.querySelector('.calendly-inline-widget');
       if (window.Calendly && widget) {
         window.Calendly.initInlineWidget({
-          url: 'https://calendly.com/saspire-nicolas/new-meeting?hide_gdpr_banner=1&primary_color=1e3a5f',
+          url: 'https://calendly.com/oostboek/kennismaking?hide_gdpr_banner=1&primary_color=1e3a5f',
           parentElement: widget,
         });
       }
@@ -217,7 +217,7 @@ export default function HomePage() {
             {calendlyLoaded ? (
               <div 
                 className="calendly-inline-widget" 
-                data-url="https://calendly.com/saspire-nicolas/new-meeting?hide_gdpr_banner=1&primary_color=1e3a5f"
+                data-url="https://calendly.com/oostboek/kennismaking?hide_gdpr_banner=1&primary_color=1e3a5f"
                 style={{ minWidth: '320px', height: '700px' }}
               />
             ) : (

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma.js';
+import { sendLeadNotification } from '../lib/email.js';
 
 const router = Router();
 
@@ -43,6 +44,16 @@ router.post('/', async (req, res, next) => {
         metadata: JSON.stringify({ email: data.email }),
       },
     });
+    
+    // Send email notification (non-blocking)
+    sendLeadNotification({
+      name: data.name,
+      email: data.email,
+      phone: data.phone ?? null,
+      company: data.company ?? null,
+      service: data.service ?? null,
+      message: data.message,
+    }).catch(console.error);
     
     res.status(201).json({
       success: true,
