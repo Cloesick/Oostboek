@@ -1,5 +1,7 @@
-import { useState } from 'react';
-import { Calendar, Clock, User, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Calendar, Clock, User, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { api } from '../services/api';
+import type { Staff } from '../types/api';
 
 const SERVICE_TYPES = [
   { id: 'VAT_ADMINISTRATION', label: 'BTW Administratie', duration: 30 },
@@ -7,14 +9,16 @@ const SERVICE_TYPES = [
   { id: 'BOOKKEEPING', label: 'Boekhouding', duration: 45 },
   { id: 'STARTER_ADVICE', label: 'Startersadvies', duration: 60 },
   { id: 'SUCCESSION_PLANNING', label: 'Successieplanning', duration: 90 },
+  { id: 'SOCIAL_ADVICE', label: 'Sociaal Advies (Lonen)', duration: 45 },
+  { id: 'ACQUISITION_GUIDANCE', label: 'Overname Begeleiding', duration: 60 },
   { id: 'QUICK_QUESTION', label: 'Snelle Vraag', duration: 15 },
 ];
 
-const MOCK_STAFF = [
-  { id: '1', name: 'Jan Vermeersch', role: 'Accountant', specializations: ['tax', 'bookkeeping'] },
-  { id: '2', name: 'Marie Claeys', role: 'Fiscalist', specializations: ['tax', 'succession'] },
-  { id: '3', name: 'Pieter Desmet', role: 'Adviseur', specializations: ['startup', 'legal'] },
-];
+const ROLE_LABELS: Record<string, string> = {
+  ACCOUNTANT: 'Accountant',
+  ADVISOR: 'Adviseur',
+  ADMIN: 'Administratie',
+};
 
 export default function AppointmentsPage() {
   const [step, setStep] = useState(1);
@@ -23,8 +27,25 @@ export default function AppointmentsPage() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [topic, setTopic] = useState('');
+  
+  const [staff, setStaff] = useState<Staff[]>([]);
+  const [loadingStaff, setLoadingStaff] = useState(false);
 
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  
+  // Fetch staff when service is selected
+  useEffect(() => {
+    if (selectedService && step === 2) {
+      setLoadingStaff(true);
+      api.getStaff(selectedService)
+        .then((response) => {
+          if (response.success && response.data) {
+            setStaff(response.data);
+          }
+        })
+        .finally(() => setLoadingStaff(false));
+    }
+  }, [selectedService, step]);
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
@@ -136,32 +157,55 @@ export default function AppointmentsPage() {
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
             Kies een medewerker
           </h2>
-          <div className="grid gap-3">
-            {MOCK_STAFF.map((staff) => (
-              <button
-                key={staff.id}
-                onClick={() => {
-                  setSelectedStaff(staff.id);
-                  setStep(3);
-                }}
-                className={`p-4 rounded-xl border text-left transition-colors ${
-                  selectedStaff === staff.id
-                    ? 'border-primary-500 bg-primary-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                    <User className="w-6 h-6 text-gray-500" />
+          
+          {loadingStaff ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-6 h-6 animate-spin text-primary-600" />
+              <span className="ml-2 text-gray-500">Medewerkers laden...</span>
+            </div>
+          ) : staff.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              Geen medewerkers beschikbaar voor deze dienst.
+            </div>
+          ) : (
+            <div className="grid gap-3">
+              {staff.map((member) => (
+                <button
+                  key={member.id}
+                  onClick={() => {
+                    setSelectedStaff(member.id);
+                    setStep(3);
+                  }}
+                  className={`p-4 rounded-xl border text-left transition-colors ${
+                    selectedStaff === member.id
+                      ? 'border-primary-500 bg-primary-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
+                      <span className="text-primary-700 font-semibold">
+                        {member.firstName[0]}{member.lastName[0]}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">
+                        {member.firstName} {member.lastName}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {ROLE_LABELS[member.role] || member.role}
+                      </p>
+                      {member.specializations && (
+                        <p className="text-xs text-primary-600 mt-1">
+                          {member.specializations.split(',').join(' • ')}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium text-gray-900">{staff.name}</p>
-                    <p className="text-sm text-gray-500">{staff.role}</p>
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -294,7 +338,11 @@ export default function AppointmentsPage() {
             </div>
             <div className="flex items-center space-x-3">
               <User className="w-5 h-5 text-gray-400" />
-              <span>{MOCK_STAFF.find((s) => s.id === selectedStaff)?.name}</span>
+              <span>
+                {staff.find((s) => s.id === selectedStaff)
+                  ? `${staff.find((s) => s.id === selectedStaff)!.firstName} ${staff.find((s) => s.id === selectedStaff)!.lastName}`
+                  : ''}
+              </span>
             </div>
           </div>
 
