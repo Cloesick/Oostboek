@@ -1,14 +1,14 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Home, Calendar, MessageCircle, LogOut, Menu, X } from 'lucide-react';
-import { useState } from 'react';
+import { Home, Calendar, MessageCircle, LogOut } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
+import Header from './Header';
+import Footer from './Footer';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 export default function Layout({ children }: LayoutProps) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
@@ -25,23 +25,16 @@ export default function Layout({ children }: LayoutProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-primary-800 text-white sticky top-0 z-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Main Site Header */}
+      <Header />
+      
+      {/* Dashboard Navigation Bar */}
+      <div className="bg-primary-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link to="/dashboard" className="flex items-center space-x-2">
-              <img 
-                src="/oostboek.png" 
-                alt="Oostboek" 
-                className="h-8 w-auto"
-              />
-              <span className="font-semibold text-lg hidden sm:block">Oostboek</span>
-            </Link>
-
+          <div className="flex items-center justify-between h-14">
             {/* Desktop Nav */}
-            <nav className="hidden md:flex items-center space-x-4">
+            <nav className="hidden md:flex items-center space-x-2">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
@@ -49,7 +42,7 @@ export default function Layout({ children }: LayoutProps) {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
                       isActive
                         ? 'bg-primary-700 text-white'
                         : 'text-primary-100 hover:bg-primary-700 hover:text-white'
@@ -63,54 +56,22 @@ export default function Layout({ children }: LayoutProps) {
             </nav>
 
             {/* User Menu */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 ml-auto">
               <span className="hidden sm:block text-sm text-primary-100">
-                {user?.firstName} {user?.lastName}
+                Welkom, {user?.firstName}
               </span>
               <button
                 onClick={handleLogout}
-                className="p-2 rounded-lg hover:bg-primary-700 transition-colors"
+                className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-primary-700 transition-colors text-primary-100 hover:text-white"
                 title="Uitloggen"
               >
                 <LogOut className="w-5 h-5" />
-              </button>
-              
-              {/* Mobile menu button */}
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2 rounded-lg hover:bg-primary-700"
-              >
-                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                <span className="hidden sm:inline">Uitloggen</span>
               </button>
             </div>
           </div>
         </div>
-
-        {/* Mobile Nav */}
-        {mobileMenuOpen && (
-          <nav className="md:hidden border-t border-primary-700 px-4 py-2">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center space-x-3 px-3 py-3 rounded-lg ${
-                    isActive
-                      ? 'bg-primary-700 text-white'
-                      : 'text-primary-100 hover:bg-primary-700'
-                  }`}
-                >
-                  <Icon className="w-5 h-5" />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
-          </nav>
-        )}
-      </header>
+      </div>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -118,7 +79,7 @@ export default function Layout({ children }: LayoutProps) {
       </main>
 
       {/* Mobile Bottom Nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-inset-bottom">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-inset-bottom z-40">
         <div className="flex justify-around py-2">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -138,6 +99,9 @@ export default function Layout({ children }: LayoutProps) {
           })}
         </div>
       </nav>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
