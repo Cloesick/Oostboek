@@ -20,8 +20,8 @@ interface Message {
   suggestions?: string[];
 }
 
-// Knowledge base with Q&A network
-const KNOWLEDGE_BASE = {
+// Bilingual Knowledge base with Q&A network
+const KNOWLEDGE_BASE_NL = {
   btw: {
     keywords: ['btw', 'vat', 'belasting', 'aangifte', 'intervat', 'kwartaal', 'maand'],
     response: '📊 **BTW-administratie**\n\nWij bieden volledige BTW-ondersteuning:\n• Maandelijkse of driemaandelijkse aangiftes via **Intervat**\n• IC-listings en jaarlijkse klantenlisting\n• BTW-optimalisatie en -advies\n• Controle door de fiscus? Wij staan u bij.\n\n**Deadlines:**\n• Kwartaalaangevers: 20e van de maand na het kwartaal\n• Maandaangevers: 20e van de volgende maand',
@@ -211,22 +211,225 @@ const KNOWLEDGE_BASE = {
   },
 };
 
+// English Knowledge Base
+const KNOWLEDGE_BASE_EN = {
+  btw: {
+    keywords: ['vat', 'tax', 'return', 'intervat', 'quarterly', 'monthly', 'btw'],
+    response: '📊 **VAT Administration**\n\nWe offer complete VAT support:\n• Monthly or quarterly returns via **Intervat**\n• IC listings and annual client listings\n• VAT optimization and advice\n• Tax audit? We stand by you.\n\n**Deadlines:**\n• Quarterly filers: 20th of the month after the quarter\n• Monthly filers: 20th of the following month',
+    links: [
+      { label: 'Intervat (FPS Finance)', url: 'http://financien.belgium.be/nl/E-services/Intervat/', type: 'external' as const },
+      { label: 'VIES VAT Check', url: 'http://ec.europa.eu/taxation_customs/vies/?locale=en', type: 'external' as const },
+      { label: 'Our tax services', url: '/fiscaliteit', type: 'internal' as const },
+    ],
+    sources: ['FPS Finance', 'Intervat'],
+    showActions: 'appointment' as const,
+  },
+  vennootschapsbelasting: {
+    keywords: ['corporate tax', 'biztax', 'company', 'bv', 'nv', 'corporation', 'vennootschapsbelasting'],
+    response: '🏢 **Corporate Tax**\n\nCorporate tax returns are filed via **Biztax**:\n• Deadline: 7 months after closing the financial year\n• We handle the complete return\n• Including all attachments and calculations\n• Tax optimization where possible\n\nWe guide you through the entire process.',
+    links: [
+      { label: 'Biztax (FPS Finance)', url: 'http://financien.belgium.be/nl/E-services/biztax/', type: 'external' as const },
+      { label: 'Tax-on-web', url: 'https://eservices.minfin.fgov.be/taxonweb/app/citizen/public/taxbox/home.do', type: 'external' as const },
+      { label: 'Our tax services', url: '/fiscaliteit', type: 'internal' as const },
+    ],
+    sources: ['FPS Finance', 'Biztax'],
+    showActions: 'appointment' as const,
+  },
+  roerende: {
+    keywords: ['withholding tax', 'dividend', 'interest', 'rv-on-web', 'roerende'],
+    response: '💵 **Withholding Tax**\n\nWithholding tax is the tax on:\n• Dividends\n• Interest\n• Other movable income\n\n**Standard rate:** 30%\n**Filing:** via RV-on-web\n\nWe ensure correct filing and optimize where possible.',
+    links: [
+      { label: 'RV-on-web', url: 'http://financien.belgium.be/nl/E-services/rv-on-web/', type: 'external' as const },
+      { label: 'Tax certificates', url: 'https://eservices.minfin.fgov.be/portal/nl/public/citizen/services/attests', type: 'external' as const },
+    ],
+    sources: ['FPS Finance', 'RV-on-web'],
+    showActions: 'appointment' as const,
+  },
+  starter: {
+    keywords: ['starter', 'start', 'begin', 'new business', 'establish', 'kbo', 'entrepreneur'],
+    response: '🚀 **Startup Guidance**\n\nWe help starters with:\n• Choosing legal form (sole proprietorship, BV, VOF...)\n• **KBO registration** (Crossroads Bank for Enterprises)\n• VAT registration via Intervat\n• Setting up initial bookkeeping\n• Financial plan and subsidies\n\n**Free startup consultation:** 60 minutes\n\nAlso check our FAQ for frequently asked startup questions!',
+    links: [
+      { label: 'KBO Public Search', url: 'http://kbopub.economie.fgov.be/kbopub/zoeknummerform.html', type: 'external' as const },
+      { label: 'Intervat registration', url: 'http://financien.belgium.be/nl/E-services/Intervat/', type: 'external' as const },
+      { label: 'Startup guidance', url: '/begeleiding', type: 'internal' as const },
+      { label: 'FAQ', url: '/#faq', type: 'internal' as const },
+    ],
+    sources: ['KBO', 'FPS Finance'],
+    showActions: 'both' as const,
+  },
+  factuur: {
+    keywords: ['invoice', 'invoicing', 'billit', 'peppol', 'e-invoicing', 'factuur'],
+    response: '📄 **Invoicing & Documents**\n\nImportant info:\n• Invoices must be kept for **10 years**\n• We support **Peppol e-invoicing**\n• Automatic processing via **Billit**\n• Upload documents via our client portal\n\n**Tip:** From 2026, e-invoicing becomes mandatory for B2B!',
+    links: [
+      { label: 'Billit invoicing', url: 'https://my.billit.be/Account/Logon', type: 'external' as const },
+      { label: 'Oostboek Journals', url: 'https://dagboeken.oostboek.be/nl/login', type: 'external' as const },
+      { label: 'Our accounting services', url: '/boekhouding', type: 'internal' as const },
+    ],
+    sources: ['Billit', 'Oostboek'],
+    showActions: 'appointment' as const,
+  },
+  aannemer: {
+    keywords: ['contractor', '30bis', 'withholding obligation', 'rsz', 'subcontractor', 'aannemer'],
+    response: '👷 **30bis Regulation for Contractors**\n\nThe 30bis regulation requires principals to:\n• Check if contractor has debts with RSZ/tax authorities\n• If debts exist: withhold part of invoice and transfer\n\nWe check this for you via the **RSZ portal** and advise on correct handling.',
+    links: [
+      { label: 'RSZ 30bis portal', url: 'https://www.socialsecurity.be/site_nl/employer/applics/30bis/index.htm?type=all', type: 'external' as const },
+      { label: 'Our guidance', url: '/begeleiding', type: 'internal' as const },
+    ],
+    sources: ['RSZ', 'Social Security'],
+    showActions: 'appointment' as const,
+  },
+  jaarrekening: {
+    keywords: ['annual accounts', 'balance sheet', 'nbb', 'national bank', 'filing', 'publication', 'jaarrekening'],
+    response: '📊 **Annual Accounts**\n\nAnnual accounts of Belgian companies:\n• Publicly available via **NBB Balance Sheet Centre**\n• Filing required within 7 months after financial year\n• We handle preparation and filing\n\nWe also use this info for credit analyses and due diligence.',
+    links: [
+      { label: 'NBB Balance Sheet Centre', url: 'https://www.nbb.be/nl/balanscentrale', type: 'external' as const },
+      { label: 'Belgian Official Gazette', url: 'http://www.ejustice.just.fgov.be/tsv_pub/index_n.htm', type: 'external' as const },
+      { label: 'Our accounting services', url: '/boekhouding', type: 'internal' as const },
+      { label: 'Annual accounts page', url: '/boekhouding/jaarrekeningen', type: 'internal' as const },
+    ],
+    sources: ['NBB', 'Belgian Official Gazette'],
+    showActions: 'appointment' as const,
+  },
+  gdpr: {
+    keywords: ['gdpr', 'privacy', 'data protection', 'personal data', 'avg'],
+    response: '🔒 **GDPR & Privacy**\n\nAs a business you must comply with GDPR:\n• Maintain processing register\n• Draft privacy statement\n• Implement security measures\n\nThe **Data Protection Authority (GBA)** is the supervisor in Belgium.\n\nWe advise on basic obligations.',
+    links: [
+      { label: 'Data Protection Authority', url: 'https://www.privacycommission.be/nl', type: 'external' as const },
+      { label: 'GDPR Brochure (VBO)', url: 'http://www.vbo-feb.be/globalassets/publicaties/data-protection/feb_dataprotection_brochure_03_nl_web-pdf.pdf', type: 'external' as const },
+      { label: 'Our guidance', url: '/begeleiding', type: 'internal' as const },
+    ],
+    sources: ['GBA', 'VBO'],
+    showActions: 'contact' as const,
+  },
+  huur: {
+    keywords: ['rent', 'indexation', 'rental price', 'index', 'health index', 'huur'],
+    response: '🏠 **Rent Indexation**\n\nRent indexation is calculated based on the health index:\n\n**Formula:**\nNew rent = base rent × new index / initial index\n\n**Statbel** offers an official rent calculator.\n\nWe can calculate and document this for you.',
+    links: [
+      { label: 'Statbel Rent Calculator', url: 'http://statbel.fgov.be/nl/statistieken/cijfers/economie/consumptieprijzen/huurcalculator/', type: 'external' as const },
+    ],
+    sources: ['Statbel'],
+    showActions: 'contact' as const,
+  },
+  kadaster: {
+    keywords: ['cadastre', 'cadastral', 'real estate', 'property', 'ki', 'cadastral income', 'kadaster'],
+    response: '🏡 **Cadastre & Real Estate**\n\nLook up cadastral data:\n• Cadastral income (KI)\n• Property data\n• Plot information\n\nVia **KMWeb** you can consult cadastral data.',
+    links: [
+      { label: 'KMWeb Cadastre', url: 'http://ccff02.minfin.fgov.be/KMWeb/main.do?home=true', type: 'external' as const },
+      { label: 'Tax certificates', url: 'https://eservices.minfin.fgov.be/portal/nl/public/citizen/services/attests', type: 'external' as const },
+    ],
+    sources: ['FPS Finance', 'Cadastre'],
+    showActions: 'appointment' as const,
+  },
+  attest: {
+    keywords: ['certificate', 'attestation', 'no debts', '442bis', 'tax certificate', 'attest'],
+    response: '📜 **Tax Certificates**\n\nRequest tax certificates:\n• No debt certificate\n• Article 442bis certificate\n• Other tax certificates\n\nThese are often needed for:\n• Government contracts\n• Subsidy applications\n• Credit applications\n\nWe can request these for you via the eServices portal.',
+    links: [
+      { label: 'eServices Certificates', url: 'https://eservices.minfin.fgov.be/portal/nl/public/citizen/services/attests', type: 'external' as const },
+      { label: 'Our guidance', url: '/begeleiding', type: 'internal' as const },
+    ],
+    sources: ['FPS Finance'],
+    showActions: 'appointment' as const,
+  },
+  successie: {
+    keywords: ['succession', 'inheritance', 'gift', 'estate', 'will', 'successie'],
+    response: '🏛️ **Succession Planning**\n\nWe advise on:\n• Gifts and inheritances\n• Tax-efficient transfers\n• Family companies\n• Wills and marriage contracts\n\nThis is complex and personal. A consultation with our specialist is highly recommended.',
+    links: [
+      { label: 'Succession planning info', url: '/begeleiding', type: 'internal' as const },
+      { label: 'FAQ', url: '/#faq', type: 'internal' as const },
+    ],
+    sources: ['Oostboek'],
+    showActions: 'appointment' as const,
+  },
+  overname: {
+    keywords: ['acquisition', 'sale', 'sell business', 'due diligence', 'valuation', 'overname'],
+    response: '🤝 **Acquisition & Sale**\n\nWe guide:\n• Due diligence\n• Valuation of your business\n• Tax optimization on sale\n• Negotiations and contracts\n\nVia the **NBB Balance Sheet Centre** we analyze financial data of potential acquisitions.',
+    links: [
+      { label: 'NBB Balance Sheet Centre', url: 'https://www.nbb.be/nl/balanscentrale', type: 'external' as const },
+      { label: 'KBO lookup', url: 'http://kbopub.economie.fgov.be/kbopub/zoeknummerform.html', type: 'external' as const },
+      { label: 'Our guidance', url: '/begeleiding', type: 'internal' as const },
+    ],
+    sources: ['NBB', 'KBO'],
+    showActions: 'appointment' as const,
+  },
+  prijs: {
+    keywords: ['price', 'cost', 'rate', 'quote', 'how much', 'pricing', 'tariff'],
+    response: '💰 **Pricing**\n\nOur rates are customized, depending on:\n• Type of business (sole proprietorship, BV, VZW...)\n• Number of transactions per year\n• Desired services\n\n**Indication:**\n• Establishing legal entity: from €1,500\n• Annual accounting: up to €2,500/year\n• Sole proprietorship: from €150/month\n\nFor a free quote, we\'d be happy to schedule an introductory meeting.',
+    links: [
+      { label: 'Make appointment', url: '/appointments', type: 'internal' as const },
+      { label: 'Our services', url: '/boekhouding', type: 'internal' as const },
+      { label: 'FAQ', url: '/#faq', type: 'internal' as const },
+    ],
+    sources: ['Oostboek'],
+    showActions: 'both' as const,
+  },
+  contact: {
+    keywords: ['contact', 'call', 'email', 'reach', 'address', 'phone'],
+    response: '📞 **Contact Oostboek**\n\n**Address:**\nKoningin Astridlaan 134 bus 1\n8200 Bruges, Belgium\n\n**Phone:** +32 50 45 70 31\n**Email:** brugge@oostboek.be\n\nOr schedule an appointment directly!',
+    links: [
+      { label: 'Make appointment', url: '/appointments', type: 'internal' as const },
+      { label: 'Contact form', url: '/#contact', type: 'internal' as const },
+    ],
+    sources: ['Oostboek'],
+    showActions: 'both' as const,
+  },
+  nieuws: {
+    keywords: ['news', 'update', 'new', 'legislation', 'change'],
+    response: '📰 **News & Updates**\n\nStay informed about:\n• New legislation\n• Tax changes\n• Deadlines\n• Office news\n\nCheck our news page for the latest updates!',
+    links: [
+      { label: 'News page', url: '/nieuws', type: 'internal' as const },
+      { label: 'Belgian Official Gazette', url: 'http://www.ejustice.just.fgov.be/tsv_pub/index_n.htm', type: 'external' as const },
+    ],
+    sources: ['Oostboek', 'Belgian Official Gazette'],
+    showActions: undefined,
+  },
+  vacature: {
+    keywords: ['vacancy', 'job', 'work', 'apply', 'career', 'employment'],
+    response: '💼 **Work at Oostboek**\n\nWe are always looking for motivated people!\n\nCheck our open vacancies or send an open application to jobs@oostboek.be.',
+    links: [
+      { label: 'Vacancies', url: '/vacatures', type: 'internal' as const },
+    ],
+    sources: ['Oostboek'],
+    showActions: undefined,
+  },
+  links: {
+    keywords: ['link', 'website', 'portal', 'useful', 'tool', 'resource'],
+    response: '🔗 **Useful Links**\n\nWe have an extensive collection of useful websites and tools for entrepreneurs:\n• Tax services\n• Invoicing tools\n• Official registers\n• Privacy & GDPR\n\nCheck our links page!',
+    links: [
+      { label: 'All useful links', url: '/links', type: 'internal' as const },
+    ],
+    sources: ['Oostboek'],
+    showActions: undefined,
+  },
+};
+
 export default function ChatPage() {
-  const { t } = useLanguage();
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: 'Welkom bij Oostboek! 👋 Hoe kan ik u vandaag helpen?\n\nKies een onderwerp hieronder of typ uw vraag:',
-      timestamp: new Date(),
-      showActions: undefined,
-      links: [
-        { label: 'Veelgestelde vragen', url: '/#faq', type: 'internal' },
-        { label: 'Alle nuttige links', url: '/links', type: 'internal' },
-      ],
-      suggestions: ['BTW aangifte', 'Starter worden', 'Vennootschapsbelasting', 'Jaarrekening', 'GDPR privacy', 'Tarieven', '30bis aannemer', 'Afspraak maken'],
-    },
-  ]);
+  const { t, language } = useLanguage();
+  
+  // Get the appropriate knowledge base based on language
+  const KNOWLEDGE_BASE = language === 'en' ? KNOWLEDGE_BASE_EN : KNOWLEDGE_BASE_NL;
+  
+  // Initial welcome message based on language
+  const getInitialMessage = (): Message => ({
+    id: '1',
+    role: 'assistant',
+    content: t.chat.welcome,
+    timestamp: new Date(),
+    showActions: undefined,
+    links: language === 'en' 
+      ? [
+          { label: 'FAQ', url: '/#faq', type: 'internal' },
+          { label: 'All useful links', url: '/links', type: 'internal' },
+        ]
+      : [
+          { label: 'Veelgestelde vragen', url: '/#faq', type: 'internal' },
+          { label: 'Alle nuttige links', url: '/links', type: 'internal' },
+        ],
+    suggestions: language === 'en'
+      ? ['VAT return', 'Start a business', 'Corporate tax', 'Annual accounts', 'GDPR privacy', 'Pricing', '30bis contractor', 'Make appointment']
+      : ['BTW aangifte', 'Starter worden', 'Vennootschapsbelasting', 'Jaarrekening', 'GDPR privacy', 'Tarieven', '30bis aannemer', 'Afspraak maken'],
+  });
+
+  const [messages, setMessages] = useState<Message[]>([getInitialMessage()]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [questionCount, setQuestionCount] = useState(0);
@@ -277,38 +480,46 @@ export default function ChatPage() {
     setQuestionCount(prev => prev + 1);
 
     // Special case: affirmative response (ja/yes) - direct to Calendly
-    if (lower === 'ja' || lower === 'yes' || lower === 'ok' || lower === 'oké' || lower === 'graag' || lower === 'ja graag' || lower.includes('ja, graag')) {
+    if (lower === 'ja' || lower === 'yes' || lower === 'ok' || lower === 'oké' || lower === 'graag' || lower === 'ja graag' || lower.includes('ja, graag') || lower.includes('yes, i would')) {
       return {
-        content: '📅 **Perfect!** Klik hieronder om direct een afspraak in te plannen via Calendly. Kies een tijdstip dat u het beste uitkomt.',
+        content: language === 'en' 
+          ? '📅 **Perfect!** Click below to schedule an appointment via Calendly. Choose a time that suits you best.'
+          : '📅 **Perfect!** Klik hieronder om direct een afspraak in te plannen via Calendly. Kies een tijdstip dat u het beste uitkomt.',
         showActions: undefined,
         links: [
-          { label: '📅 Plan afspraak via Calendly', url: 'https://calendly.com/oostboek/kennismaking', type: 'external' },
-          { label: 'Of bel ons: 050/45 70 31', url: 'tel:+3250457031', type: 'external' },
+          { label: language === 'en' ? '📅 Schedule via Calendly' : '📅 Plan afspraak via Calendly', url: 'https://calendly.com/oostboek/kennismaking', type: 'external' },
+          { label: language === 'en' ? 'Or call us: +32 50 45 70 31' : 'Of bel ons: 050/45 70 31', url: 'tel:+3250457031', type: 'external' },
         ],
       };
     }
 
     // Special case: negative response - show topic options
-    if (lower === 'nee' || lower === 'no' || lower.includes('nee,') || lower.includes('nog een vraag')) {
+    if (lower === 'nee' || lower === 'no' || lower.includes('nee,') || lower.includes('nog een vraag') || lower.includes('another question')) {
       setQuestionCount(0); // Reset question count
       return {
-        content: 'Geen probleem! 😊 Waar kan ik u verder mee helpen?\n\nKies een onderwerp:',
+        content: language === 'en'
+          ? 'No problem! 😊 What else can I help you with?\n\nChoose a topic:'
+          : 'Geen probleem! 😊 Waar kan ik u verder mee helpen?\n\nKies een onderwerp:',
         showActions: undefined,
         links: [
-          { label: 'Veelgestelde vragen', url: '/#faq', type: 'internal' },
+          { label: language === 'en' ? 'FAQ' : 'Veelgestelde vragen', url: '/#faq', type: 'internal' },
         ],
-        suggestions: ['BTW aangifte', 'Starter worden', 'Vennootschapsbelasting', 'Jaarrekening', 'GDPR privacy', 'Tarieven'],
+        suggestions: language === 'en'
+          ? ['VAT return', 'Start a business', 'Corporate tax', 'Annual accounts', 'GDPR privacy', 'Pricing']
+          : ['BTW aangifte', 'Starter worden', 'Vennootschapsbelasting', 'Jaarrekening', 'GDPR privacy', 'Tarieven'],
       };
     }
 
     // Special case: direct appointment request
-    if (lower.includes('afspraak') || lower.includes('appointment') || lower.includes('gesprek maken') || lower.includes('calendly')) {
+    if (lower.includes('afspraak') || lower.includes('appointment') || lower.includes('gesprek maken') || lower.includes('calendly') || lower.includes('schedule') || lower.includes('meeting')) {
       return {
-        content: '📅 **Afspraak maken**\n\nU kunt direct een afspraak inplannen via Calendly. Kies een tijdstip dat u het beste uitkomt voor een vrijblijvend kennismakingsgesprek.',
+        content: language === 'en'
+          ? '📅 **Make an Appointment**\n\nYou can schedule an appointment directly via Calendly. Choose a time that suits you for a free introductory meeting.'
+          : '📅 **Afspraak maken**\n\nU kunt direct een afspraak inplannen via Calendly. Kies een tijdstip dat u het beste uitkomt voor een vrijblijvend kennismakingsgesprek.',
         showActions: undefined,
         links: [
-          { label: '📅 Plan afspraak via Calendly', url: 'https://calendly.com/oostboek/kennismaking', type: 'external' },
-          { label: 'Contactformulier', url: '/#contact', type: 'internal' },
+          { label: language === 'en' ? '📅 Schedule via Calendly' : '📅 Plan afspraak via Calendly', url: 'https://calendly.com/oostboek/kennismaking', type: 'external' },
+          { label: language === 'en' ? 'Contact form' : 'Contactformulier', url: '/#contact', type: 'internal' },
         ],
       };
     }
@@ -329,25 +540,33 @@ export default function ChatPage() {
     // After 3 questions without match, prompt for appointment
     if (questionCount >= 2) {
       return {
-        content: 'Bedankt voor uw vragen! 🤝 Ik merk dat u meerdere zaken wilt bespreken. Voor een volledig beeld van uw situatie raad ik een persoonlijk gesprek aan met een van onze specialisten. Dit is vrijblijvend en gratis.\n\nWilt u een afspraak maken om uw specifieke situatie te bespreken?',
+        content: language === 'en'
+          ? 'Thank you for your questions! 🤝 I notice you have several matters to discuss. For a complete picture of your situation, I recommend a personal meeting with one of our specialists. This is free and without obligation.\n\nWould you like to schedule an appointment to discuss your specific situation?'
+          : 'Bedankt voor uw vragen! 🤝 Ik merk dat u meerdere zaken wilt bespreken. Voor een volledig beeld van uw situatie raad ik een persoonlijk gesprek aan met een van onze specialisten. Dit is vrijblijvend en gratis.\n\nWilt u een afspraak maken om uw specifieke situatie te bespreken?',
         showActions: undefined,
         links: [
-          { label: 'Veelgestelde vragen', url: '/#faq', type: 'internal' },
-          { label: 'Alle nuttige links', url: '/links', type: 'internal' },
+          { label: language === 'en' ? 'FAQ' : 'Veelgestelde vragen', url: '/#faq', type: 'internal' },
+          { label: language === 'en' ? 'All useful links' : 'Alle nuttige links', url: '/links', type: 'internal' },
         ],
-        suggestions: ['Ja, graag een afspraak', 'Nee, ik heb nog een vraag'],
+        suggestions: language === 'en'
+          ? ['Yes, I would like an appointment', 'No, I have another question']
+          : ['Ja, graag een afspraak', 'Nee, ik heb nog een vraag'],
       };
     }
 
     // Default response with helpful suggestions
     return {
-      content: 'Bedankt voor uw vraag! 🤔 Waar kan ik u mee helpen?\n\nKies een onderwerp of typ uw vraag:',
+      content: language === 'en'
+        ? 'Thank you for your question! 🤔 How can I help you?\n\nChoose a topic or type your question:'
+        : 'Bedankt voor uw vraag! 🤔 Waar kan ik u mee helpen?\n\nKies een onderwerp of typ uw vraag:',
       showActions: 'both',
       links: [
-        { label: 'Veelgestelde vragen', url: '/#faq', type: 'internal' },
-        { label: 'Alle nuttige links', url: '/links', type: 'internal' },
+        { label: language === 'en' ? 'FAQ' : 'Veelgestelde vragen', url: '/#faq', type: 'internal' },
+        { label: language === 'en' ? 'All useful links' : 'Alle nuttige links', url: '/links', type: 'internal' },
       ],
-      suggestions: ['BTW aangifte', 'Starter worden', 'Jaarrekening', 'GDPR privacy', 'Tarieven', 'Afspraak maken'],
+      suggestions: language === 'en'
+        ? ['VAT return', 'Start a business', 'Annual accounts', 'GDPR privacy', 'Pricing', 'Make appointment']
+        : ['BTW aangifte', 'Starter worden', 'Jaarrekening', 'GDPR privacy', 'Tarieven', 'Afspraak maken'],
     };
   };
 
