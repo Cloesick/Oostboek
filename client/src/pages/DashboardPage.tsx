@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, MessageCircle, FileText, Clock, ArrowRight, Loader2 } from 'lucide-react';
+import { Calendar, MessageCircle, FileText, Clock, ArrowRight, Loader2, Upload, Download, File, X } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 import { api } from '../services/api';
 import type { Appointment } from '../types/api';
+
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
@@ -121,19 +122,63 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Recent Documents */}
-      <div className="card">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Recente documenten</h2>
-          <button className="text-sm text-primary-600 hover:text-primary-700">
-            Bekijk alle
-          </button>
+      {/* Documents Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Received Documents */}
+        <div className="card">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Download className="w-5 h-5 text-primary-600" />
+              <h2 className="text-lg font-semibold text-gray-900">Ontvangen documenten</h2>
+            </div>
+            <span className="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded-full">
+              Van Oostboek
+            </span>
+          </div>
+          
+          <div className="space-y-2 mb-4">
+            {/* Placeholder documents - replace with API data */}
+            <DocumentItem 
+              name="BTW Aangifte Q3 2024.pdf" 
+              date="15 okt 2024" 
+              size="245 KB"
+              type="received"
+            />
+            <DocumentItem 
+              name="Jaarrekening 2023.pdf" 
+              date="28 jun 2024" 
+              size="1.2 MB"
+              type="received"
+            />
+          </div>
+          
+          <p className="text-xs text-gray-400 text-center">
+            Documenten van uw boekhouder
+          </p>
         </div>
-        
-        {/* Empty state */}
-        <div className="text-center py-8">
-          <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500">Nog geen documenten geüpload</p>
+
+        {/* Uploaded Documents */}
+        <div className="card">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Upload className="w-5 h-5 text-accent-600" />
+              <h2 className="text-lg font-semibold text-gray-900">Mijn uploads</h2>
+            </div>
+            <span className="text-xs bg-accent-100 text-accent-700 px-2 py-1 rounded-full">
+              Door u geüpload
+            </span>
+          </div>
+          
+          <div className="space-y-2 mb-4">
+            {/* Placeholder - empty state or uploaded docs */}
+            <div className="text-center py-4">
+              <FileText className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+              <p className="text-sm text-gray-500">Nog geen documenten geüpload</p>
+            </div>
+          </div>
+          
+          {/* Upload Zone */}
+          <UploadZone />
         </div>
       </div>
 
@@ -178,6 +223,137 @@ function InfoCard({
     <div className={`p-4 rounded-xl border ${statusColors[status]}`}>
       <h3 className="font-medium text-gray-900 mb-1">{title}</h3>
       <p className="text-sm text-gray-600">{description}</p>
+    </div>
+  );
+}
+
+function DocumentItem({
+  name,
+  date,
+  size,
+  type,
+}: {
+  name: string;
+  date: string;
+  size: string;
+  type: 'received' | 'uploaded';
+}) {
+  return (
+    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+      <div className="flex items-center gap-3">
+        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+          type === 'received' ? 'bg-primary-100' : 'bg-accent-100'
+        }`}>
+          <File className={`w-5 h-5 ${type === 'received' ? 'text-primary-600' : 'text-accent-600'}`} />
+        </div>
+        <div>
+          <p className="font-medium text-gray-900 text-sm">{name}</p>
+          <p className="text-xs text-gray-500">{date} • {size}</p>
+        </div>
+      </div>
+      <button className="p-2 hover:bg-gray-200 rounded-lg transition-colors">
+        <Download className="w-4 h-4 text-gray-500" />
+      </button>
+    </div>
+  );
+}
+
+function UploadZone() {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<{ name: string; size: string }[]>([]);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const files = Array.from(e.dataTransfer.files);
+    handleFiles(files);
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      handleFiles(files);
+    }
+  };
+
+  const handleFiles = (files: globalThis.File[]) => {
+    const newFiles = files.map(file => ({
+      name: file.name,
+      size: formatFileSize(file.size),
+    }));
+    setUploadedFiles(prev => [...prev, ...newFiles]);
+    // TODO: Actually upload files to server
+  };
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  };
+
+  const removeFile = (index: number) => {
+    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  return (
+    <div>
+      {/* Uploaded files list */}
+      {uploadedFiles.length > 0 && (
+        <div className="space-y-2 mb-3">
+          {uploadedFiles.map((file, index) => (
+            <div key={index} className="flex items-center justify-between p-2 bg-accent-50 rounded-lg">
+              <div className="flex items-center gap-2">
+                <File className="w-4 h-4 text-accent-600" />
+                <span className="text-sm text-gray-700">{file.name}</span>
+                <span className="text-xs text-gray-500">({file.size})</span>
+              </div>
+              <button 
+                onClick={() => removeFile(index)}
+                className="p-1 hover:bg-accent-100 rounded transition-colors"
+              >
+                <X className="w-4 h-4 text-gray-500" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Drop zone */}
+      <div
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        onClick={() => fileInputRef.current?.click()}
+        className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors ${
+          isDragging 
+            ? 'border-accent-500 bg-accent-50' 
+            : 'border-gray-300 hover:border-accent-400 hover:bg-gray-50'
+        }`}
+      >
+        <Upload className={`w-8 h-8 mx-auto mb-2 ${isDragging ? 'text-accent-500' : 'text-gray-400'}`} />
+        <p className="text-sm text-gray-600 mb-1">
+          <span className="font-medium text-accent-600">Klik om te uploaden</span> of sleep bestanden hierheen
+        </p>
+        <p className="text-xs text-gray-400">PDF, JPG, PNG tot 10MB</p>
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          accept=".pdf,.jpg,.jpeg,.png"
+          onChange={handleFileSelect}
+          className="hidden"
+        />
+      </div>
     </div>
   );
 }
