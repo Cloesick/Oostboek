@@ -16,6 +16,9 @@ const app = express();
 const PORT = process.env['PORT'] ?? 3001;
 const isDev = process.env['NODE_ENV'] !== 'production';
 
+// Trust proxy for App Runner (required for rate limiting behind load balancer)
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet({
   contentSecurityPolicy: isDev ? false : true,
