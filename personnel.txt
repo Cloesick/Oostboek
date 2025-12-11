@@ -1,0 +1,14 @@
+firstName,lastName,role,specializations,email,linkedin
+Dina,Tamsin,ACCOUNTANT,"boekhouding,btw,lonen",dina.tamsin@oostboek.be,https://www.linkedin.com/in/dinatamsin/
+Mattijs,Wittevrongel,ADVISOR,"fiscaliteit,successie,overname",mattijs.wittevrongel@oostboek.be,https://www.linkedin.com/in/mattijs-wittevrongel-06b8a71b4/
+Angelique,Haeke,ADMIN,"",angelique.haeke@oostboek.be,https://www.linkedin.com/in/angelique-haeke-532347292/
+Kristel,Vande Walle,ACCOUNTANT,"boekhouding,btw",kristel.vandewalle@oostboek.be,https://www.linkedin.com/in/kristel-vande-walle-7aa9a5339/
+Xenia,Lateste,ACCOUNTANT,"boekhouding,starter",xenia.lateste@oostboek.be,https://www.linkedin.com/in/xenia-lateste-937a44252/
+Jessy,Moeyaert,ACCOUNTANT,"boekhouding,lonen",jessy.moeyaert@oostboek.be,https://www.linkedin.com/in/jessy-moeyaert-36a782133/
+Bram,Keukeleire,ADVISOR,"fiscaliteit,starter,overname",bram.keukeleire@oostboek.be,https://www.linkedin.com/in/bram-keukeleire-816544232/
+Dieter,Hoste,ADVISOR,"fiscaliteit,successie,internationaal",dieter.hoste@oostboek.be,https://www.linkedin.com/in/dieter-hoste-a19940197/
+Geert,Hutsebaut,ACCOUNTANT,"boekhouding,fiscaliteit,btw",geert.hutsebaut@oostboek.be,https://www.linkedin.com/in/geert-hutsebaut-a1b08898/
+Sophie,Ysenbrandt,ACCOUNTANT,"boekhouding,btw,internationaal",sophie.ysenbrandt@oostboek.be,https://www.linkedin.com/in/sophie-ysenbrandt-20119a124/
+Dylan,Denys,ACCOUNTANT,"boekhouding,btw",dylan.denys@oostboek.be,https://www.linkedin.com/in/dylan-denys-26b955205/
+Ann,Degryse,ADMIN,"",ann.degryse@oostboek.be,https://www.linkedin.com/in/ann-degryse-12b2b0235/
+Mathias,Lievens,ADVISOR,"starter,overname",mathias.lievens@oostboek.be,https://www.linkedin.com/in/mathias-lievens-646a93356/

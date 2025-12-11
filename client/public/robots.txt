@@ -1,0 +1,15 @@
+# Oostboek - Boekhouder Brugge
+# https://oostboek.be
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://oostboek.be/sitemap.xml
+
+# Disallow admin/private areas
+Disallow: /api/
+Disallow: /admin/
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1

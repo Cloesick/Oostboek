@@ -8,9 +8,14 @@ import DashboardPage from './pages/DashboardPage';
 import AppointmentsPage from './pages/AppointmentsPage';
 import ChatPage from './pages/ChatPage';
 import BoekhoudingPage from './pages/BoekhoudingPage';
+import JaarrekeningenPage from './pages/JaarrekeningenPage';
+import RapportagePage from './pages/RapportagePage';
+import AnalysesPage from './pages/AnalysesPage';
+import BudgettenPage from './pages/BudgettenPage';
 import FiscaliteitPage from './pages/FiscaliteitPage';
 import BegeleidingPage from './pages/BegeleidingPage';
 import FAQPage from './pages/FAQPage';
+import ProfileCompletionPage from './pages/ProfileCompletionPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore();
@@ -30,9 +35,21 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/boekhouding" element={<BoekhoudingPage />} />
+      <Route path="/boekhouding/jaarrekeningen" element={<JaarrekeningenPage />} />
+      <Route path="/boekhouding/rapportage" element={<RapportagePage />} />
+      <Route path="/boekhouding/analyses" element={<AnalysesPage />} />
+      <Route path="/boekhouding/budgetten" element={<BudgettenPage />} />
       <Route path="/fiscaliteit" element={<FiscaliteitPage />} />
       <Route path="/begeleiding" element={<BegeleidingPage />} />
       <Route path="/faq" element={<FAQPage />} />
+      <Route
+        path="/complete-profile"
+        element={
+          <ProtectedRoute>
+            <ProfileCompletionPage />
+          </ProtectedRoute>
+        }
+      />
       
       {/* Protected routes */}
       <Route

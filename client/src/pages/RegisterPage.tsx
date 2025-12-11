@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, ArrowLeft, Check } from 'lucide-react';
+import { Eye, EyeOff, Check } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 import { api } from '../services/api';
+import Header from '../components/Header';
+import { useLanguage } from '../i18n/LanguageContext';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -19,6 +21,7 @@ export default function RegisterPage() {
   
   const navigate = useNavigate();
   const { login } = useAuthStore();
+  const { t } = useLanguage();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -33,17 +36,17 @@ export default function RegisterPage() {
     setError('');
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Wachtwoorden komen niet overeen');
+      setError(t.auth.passwordMismatch);
       return;
     }
 
     if (formData.password.length < 8) {
-      setError('Wachtwoord moet minimaal 8 tekens bevatten');
+      setError(t.auth.passwordTooShort);
       return;
     }
 
     if (!formData.gdprConsent) {
-      setError('U moet akkoord gaan met de privacyvoorwaarden');
+      setError(t.auth.gdprRequired);
       return;
     }
 
@@ -60,12 +63,12 @@ export default function RegisterPage() {
       
       if (response.success && response.data) {
         login(response.data.user, response.data.token);
-        navigate('/dashboard');
+        navigate('/complete-profile');
       } else {
         setError(response.error || 'Registratie mislukt');
       }
     } catch (err) {
-      setError('Er is een fout opgetreden. Probeer het opnieuw.');
+      setError(t.auth.error);
     } finally {
       setLoading(false);
     }
@@ -73,26 +76,14 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
-      <header className="px-4 py-4">
-        <Link
-          to="/"
-          className="inline-flex items-center text-gray-600 hover:text-gray-900"
-        >
-          <ArrowLeft className="w-5 h-5 mr-2" />
-          Terug naar home
-        </Link>
-      </header>
+      <Header />
 
       {/* Form */}
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-primary-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <span className="text-white font-bold text-2xl">O</span>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900">Account aanmaken</h1>
-            <p className="text-gray-600 mt-2">Start uw digitale boekhoudervaring</p>
+            <h1 className="text-2xl font-bold text-gray-900">{t.auth.registerTitle}</h1>
+            <p className="text-gray-600 mt-2">{t.auth.registerSubtitle}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="card space-y-5">
@@ -105,7 +96,7 @@ export default function RegisterPage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
-                  Voornaam
+                  {t.auth.firstName}
                 </label>
                 <input
                   id="firstName"
@@ -120,7 +111,7 @@ export default function RegisterPage() {
               </div>
               <div>
                 <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
-                  Achternaam
+                  {t.auth.lastName}
                 </label>
                 <input
                   id="lastName"
@@ -137,7 +128,7 @@ export default function RegisterPage() {
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                E-mailadres
+                {t.auth.email}
               </label>
               <input
                 id="email"
@@ -154,7 +145,7 @@ export default function RegisterPage() {
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Wachtwoord
+                {t.auth.password}
               </label>
               <div className="relative">
                 <input
@@ -165,7 +156,7 @@ export default function RegisterPage() {
                   value={formData.password}
                   onChange={handleChange}
                   className="input pr-10"
-                  placeholder="Minimaal 8 tekens"
+                  placeholder={t.auth.passwordMinLength}
                   required
                 />
                 <button
@@ -180,7 +171,7 @@ export default function RegisterPage() {
 
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                Bevestig wachtwoord
+                {t.auth.confirmPassword}
               </label>
               <input
                 id="confirmPassword"
@@ -217,11 +208,7 @@ export default function RegisterPage() {
                 </div>
               </div>
               <label htmlFor="gdprConsent" className="text-sm text-gray-600 cursor-pointer">
-                Ik ga akkoord met de{' '}
-                <a href="#" className="text-primary-600 hover:underline">
-                  privacyvoorwaarden
-                </a>{' '}
-                en geef toestemming voor de verwerking van mijn gegevens conform de GDPR.
+                {t.auth.gdprConsent}
               </label>
             </div>
 
@@ -230,18 +217,25 @@ export default function RegisterPage() {
               disabled={loading}
               className="btn-primary w-full py-3"
             >
-              {loading ? 'Account aanmaken...' : 'Registreren'}
+              {loading ? t.auth.registering : t.auth.registerButton}
             </button>
 
             <p className="text-center text-sm text-gray-600">
-              Heeft u al een account?{' '}
+              {t.auth.hasAccount}{' '}
               <Link to="/login" className="text-primary-600 hover:text-primary-700 font-medium">
-                Log hier in
+                {t.auth.loginHere}
               </Link>
             </p>
           </form>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="bg-primary-950 text-white py-8 px-4">
+        <div className="max-w-6xl mx-auto text-center text-sm text-primary-400">
+          <p>&copy; 2025 Oostboek. {t.footer.rights}</p>
+        </div>
+      </footer>
     </div>
   );
 }

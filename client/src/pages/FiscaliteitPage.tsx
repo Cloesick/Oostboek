@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom';
 import { Shield, FileCheck, Scale, Building2, ArrowRight, CheckCircle, Lightbulb, Users } from 'lucide-react';
 import Header from '../components/Header';
+import { useLanguage } from '../i18n/LanguageContext';
 
 export default function FiscaliteitPage() {
+  const { t } = useLanguage();
+  
   return (
     <div className="min-h-screen bg-white font-sans">
       {/* Header */}
@@ -12,7 +15,7 @@ export default function FiscaliteitPage() {
       <section className="bg-primary-900 text-white py-20">
         <div className="max-w-6xl mx-auto px-4">
           <div className="max-w-3xl">
-            <p className="text-accent-400 font-semibold mb-4">Fiscaliteit</p>
+            <p className="text-accent-400 font-semibold mb-4">{t.nav.fiscaliteit}</p>
             <h1 className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">
               Fiscalisten waarop je kan rekenen
             </h1>

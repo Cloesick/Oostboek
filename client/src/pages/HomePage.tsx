@@ -1,11 +1,63 @@
 import { Link } from 'react-router-dom';
-import { Calendar, MessageCircle, Shield, Clock, FileText, Users, ArrowRight, TrendingUp, BarChart3, CheckCircle } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { ArrowRight, CheckCircle, ChevronDown } from 'lucide-react';
 import Header from '../components/Header';
 import { ContactSection } from '../components/ContactForm';
+import TeamSection from '../components/TeamSection';
 import { useLanguage } from '../i18n/LanguageContext';
+
+// Declare Calendly on window for TypeScript
+declare global {
+  interface Window {
+    Calendly?: {
+      initInlineWidget: (options: { url: string; parentElement: Element }) => void;
+      initPopupWidget: (options: { url: string }) => void;
+    };
+  }
+}
 
 export default function HomePage() {
   const { t } = useLanguage();
+  const [calendlyLoaded, setCalendlyLoaded] = useState(false);
+  const calendlyRef = useRef<HTMLDivElement>(null);
+  
+  // Lazy load Calendly when section comes into view
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !calendlyLoaded) {
+          setCalendlyLoaded(true);
+        }
+      },
+      { rootMargin: '200px' } // Load 200px before it's visible
+    );
+
+    if (calendlyRef.current) {
+      observer.observe(calendlyRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [calendlyLoaded]);
+
+  // Initialize Calendly widget after it's loaded
+  useEffect(() => {
+    if (!calendlyLoaded) return;
+    
+    const initCalendly = () => {
+      const widget = document.querySelector('.calendly-inline-widget');
+      if (window.Calendly && widget) {
+        window.Calendly.initInlineWidget({
+          url: 'https://calendly.com/saspire-nicolas/new-meeting?hide_gdpr_banner=1&primary_color=1e3a5f',
+          parentElement: widget,
+        });
+      }
+    };
+
+    // Try immediately, then retry after script loads
+    initCalendly();
+    const timer = setTimeout(initCalendly, 1000);
+    return () => clearTimeout(timer);
+  }, [calendlyLoaded]);
   
   return (
     <div className="min-h-screen bg-surface-50 font-body">
@@ -100,66 +152,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Services - Dense, professional grid */}
-      <section id="diensten" className="px-4 py-16 bg-white border-b-4 border-accent-500">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-10">
-            <h2 className="text-2xl md:text-3xl font-bold text-primary-900">Onze Expertise</h2>
-          </div>
-          <div className="grid md:grid-cols-3 gap-0">
-            <ServiceCard
-              icon={FileText}
-              title="Boekhouding"
-              description="Analytische boekhouding, jaarrekeningen, rapportage & dashboards, financiële analyses."
-              link="/boekhouding"
-              internal
-            />
-            <ServiceCard
-              icon={Shield}
-              title="Fiscaliteit"
-              description="BTW-aangiftes, vennootschapsbelasting, loonoptimalisatie, fiscale controles."
-              link="/fiscaliteit"
-              internal
-            />
-            <ServiceCard
-              icon={Users}
-              title="Begeleiding"
-              description="Startersadvies, overname, kredietbegeleiding, vermogensplanning."
-              link="/begeleiding"
-              internal
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Why Oostboek - Data-driven trust signals */}
-      <section className="px-4 py-16 bg-surface-100">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-6">
-            <div className="data-card text-center">
-              <TrendingUp className="w-8 h-8 text-accent-500 mx-auto mb-3" />
-              <div className="text-3xl font-mono font-bold text-primary-900">+23%</div>
-              <div className="text-sm text-primary-600 mt-1">Gem. fiscale besparing</div>
-            </div>
-            <div className="data-card text-center">
-              <BarChart3 className="w-8 h-8 text-accent-500 mx-auto mb-3" />
-              <div className="text-3xl font-mono font-bold text-primary-900">500+</div>
-              <div className="text-sm text-primary-600 mt-1">Actieve klanten</div>
-            </div>
-            <div className="data-card text-center">
-              <Clock className="w-8 h-8 text-accent-500 mx-auto mb-3" />
-              <div className="text-3xl font-mono font-bold text-primary-900">25+</div>
-              <div className="text-sm text-primary-600 mt-1">Jaar ervaring</div>
-            </div>
-            <div className="data-card text-center">
-              <CheckCircle className="w-8 h-8 text-accent-500 mx-auto mb-3" />
-              <div className="text-3xl font-mono font-bold text-primary-900">98%</div>
-              <div className="text-sm text-primary-600 mt-1">Klanttevredenheid</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* About section - More compact */}
       <section className="px-4 py-16 bg-white">
         <div className="max-w-6xl mx-auto">
@@ -209,78 +201,63 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Platform Features */}
-      <section className="px-4 py-20 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Uw digitale klantenportaal
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              24/7 toegang tot al uw boekhoudkundige zaken, waar en wanneer u maar wilt.
-            </p>
+      {/* Team Section */}
+      <TeamSection />
+
+      {/* Calendly Section */}
+      <section id="afspraak" className="px-4 py-20 bg-white" ref={calendlyRef}>
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{t.pages.calendly.title}</h2>
+            {t.pages.calendly.subtitle && (
+              <p className="text-lg text-gray-600">{t.pages.calendly.subtitle}</p>
+            )}
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <FeatureCard
-              icon={Calendar}
-              title="Afspraken"
-              description="Plan eenvoudig een afspraak met onze specialisten."
-            />
-            <FeatureCard
-              icon={MessageCircle}
-              title="AI Assistent"
-              description="Direct antwoord op uw vragen over BTW, facturatie en meer."
-            />
-            <FeatureCard
-              icon={FileText}
-              title="Documenten"
-              description="Upload en bekijk uw documenten veilig online."
-            />
-            <FeatureCard
-              icon={Clock}
-              title="24/7 Toegang"
-              description="Bekijk uw status wanneer het u uitkomt."
-            />
+          <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
+            {calendlyLoaded ? (
+              <div 
+                className="calendly-inline-widget" 
+                data-url="https://calendly.com/saspire-nicolas/new-meeting?hide_gdpr_banner=1&primary_color=1e3a5f"
+                style={{ minWidth: '320px', height: '700px' }}
+              />
+            ) : (
+              <div className="flex items-center justify-center h-[700px] bg-gray-50">
+                <div className="text-center">
+                  <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                  <p className="text-gray-500">Kalender laden...</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>
 
-      {/* Contact Form */}
-      <ContactSection />
+      {/* Contact Section */}
+      <section id="contact" className="px-4 py-20 bg-gray-50">
+        <div className="max-w-4xl mx-auto">
+          <ContactSection />
+        </div>
+      </section>
 
-      {/* CTA */}
-      <section className="px-4 py-20 bg-gradient-to-br from-primary-800 to-primary-900">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Klaar om te beginnen?
-          </h2>
-          <p className="text-lg text-primary-100 mb-8 max-w-xl mx-auto">
-            Registreer vandaag nog en ontdek hoe Oostboek uw boekhouding eenvoudiger maakt.
-          </p>
-          <Link
-            to="/register"
-            className="inline-flex items-center gap-2 bg-accent-500 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-accent-600 transition-all shadow-lg"
-          >
-            Gratis registreren
-            <ArrowRight className="w-5 h-5" />
-          </Link>
+      {/* FAQ Section */}
+      <section id="faq" className="px-4 py-20 bg-white">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{t.pages.faq.title}</h2>
+            <p className="text-lg text-gray-600">{t.pages.faq.subtitle}</p>
+          </div>
+          <FAQAccordion />
         </div>
       </section>
 
       {/* Footer - Oostboek style */}
-      <footer className="bg-primary-900 text-white">
+      <footer className="bg-primary-950 text-white">
         <div className="max-w-6xl mx-auto px-4 py-16">
           <div className="grid md:grid-cols-4 gap-8 mb-12">
             <div className="md:col-span-2">
-              <div className="flex items-center space-x-3 mb-6">
-                <div className="w-12 h-12 bg-white rounded flex items-center justify-center">
-                  <span className="text-primary-900 font-extrabold text-2xl">O</span>
-                </div>
-                <div>
-                  <span className="text-white font-bold text-xl block">Oostboek</span>
-                  <span className="text-primary-400 text-sm">Boekhouders & mee(r)denkers</span>
-                </div>
-              </div>
+              <a href="#" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="inline-block mb-6 cursor-pointer">
+                <img src="/oostboek.png" alt="Oostboek Boekhouder Brugge - Logo" className="h-11 w-auto" />
+              </a>
               <p className="text-primary-300 leading-relaxed max-w-md">
                 Professioneel advies en persoonlijke begeleiding. Starter of gevestigde onderneming? 
                 Oostboek denkt proactief mee over elke opportuniteit.
@@ -298,11 +275,11 @@ export default function HomePage() {
             <div>
               <h4 className="text-white font-bold mb-4 text-lg">Navigatie</h4>
               <div className="space-y-2">
-                <Link to="/" className="block text-primary-300 hover:text-accent-400 transition-colors cursor-pointer">Home</Link>
+                <a href="#" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="block text-primary-300 hover:text-accent-400 transition-colors cursor-pointer">Home</a>
                 <Link to="/boekhouding" className="block text-primary-300 hover:text-accent-400 transition-colors cursor-pointer">Boekhouding</Link>
                 <Link to="/fiscaliteit" className="block text-primary-300 hover:text-accent-400 transition-colors cursor-pointer">Fiscaliteit</Link>
                 <Link to="/begeleiding" className="block text-primary-300 hover:text-accent-400 transition-colors cursor-pointer">Begeleiding</Link>
-                <Link to="/faq" className="block text-primary-300 hover:text-accent-400 transition-colors cursor-pointer">FAQ</Link>
+                <a href="#faq" className="block text-primary-300 hover:text-accent-400 transition-colors cursor-pointer">FAQ</a>
                 <Link to="/login" className="block text-primary-300 hover:text-accent-400 transition-colors cursor-pointer">Login</Link>
               </div>
             </div>
@@ -321,67 +298,46 @@ export default function HomePage() {
   );
 }
 
-function ServiceCard({
-  icon: Icon,
-  title,
-  description,
-  link,
-  internal,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  description: string;
-  link?: string;
-  internal?: boolean;
-}) {
-  return (
-    <div className="p-8 md:p-10 border-r border-b border-gray-200 last:border-r-0 bg-white hover:bg-gray-50 transition-colors group">
-      <div className="w-12 h-12 bg-primary-900 rounded flex items-center justify-center mb-6">
-        <Icon className="w-6 h-6 text-white" />
-      </div>
-      <h3 className="text-xl font-bold text-primary-900 mb-3">{title}</h3>
-      <p className="text-gray-600 leading-relaxed mb-6">{description}</p>
-      {link && (
-        internal ? (
-          <Link 
-            to={link}
-            className="inline-flex items-center gap-2 text-accent-600 font-semibold hover:text-accent-700 transition-colors group-hover:gap-3"
-          >
-            lees meer
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        ) : (
-          <a 
-            href={link} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-accent-600 font-semibold hover:text-accent-700 transition-colors group-hover:gap-3"
-          >
-            lees meer
-            <ArrowRight className="w-4 h-4" />
-          </a>
-        )
-      )}
-    </div>
-  );
-}
+function FAQAccordion() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const { t } = useLanguage();
 
-function FeatureCard({
-  icon: Icon,
-  title,
-  description,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  description: string;
-}) {
+  const faqData = [
+    { question: t.faqItems.q1, answer: t.faqItems.a1 },
+    { question: t.faqItems.q2, answer: t.faqItems.a2 },
+    { question: t.faqItems.q3, answer: t.faqItems.a3 },
+    { question: t.faqItems.q4, answer: t.faqItems.a4 },
+    { question: t.faqItems.q5, answer: t.faqItems.a5 },
+    { question: t.faqItems.q6, answer: t.faqItems.a6 },
+    { question: t.faqItems.q7, answer: t.faqItems.a7 },
+    { question: t.faqItems.q8, answer: t.faqItems.a8 },
+  ];
+
   return (
-    <div className="text-center p-6 border border-gray-200 bg-white hover:shadow-md transition-all">
-      <div className="w-12 h-12 bg-primary-900 rounded flex items-center justify-center mx-auto mb-4">
-        <Icon className="w-6 h-6 text-white" />
-      </div>
-      <h3 className="text-lg font-bold text-primary-900 mb-2">{title}</h3>
-      <p className="text-gray-600 text-sm">{description}</p>
+    <div className="space-y-3">
+      {faqData.map((faq, index) => (
+        <div
+          key={index}
+          className="bg-white rounded-xl border border-gray-200 overflow-hidden"
+        >
+          <button
+            onClick={() => setOpenIndex(openIndex === index ? null : index)}
+            className="w-full px-6 py-4 text-left flex items-center justify-between gap-4 hover:bg-gray-50 transition-colors"
+          >
+            <span className="font-semibold text-gray-900">{faq.question}</span>
+            <ChevronDown
+              className={`w-5 h-5 text-gray-500 flex-shrink-0 transition-transform ${
+                openIndex === index ? 'rotate-180' : ''
+              }`}
+            />
+          </button>
+          {openIndex === index && (
+            <div className="px-6 pb-4">
+              <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 }

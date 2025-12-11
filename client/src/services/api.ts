@@ -57,7 +57,8 @@ export const api = {
   getAvailableSlots: (date: string, staffId?: string) =>
     request<string[]>(`/appointments/available-slots?date=${date}${staffId ? `&staffId=${staffId}` : ''}`),
   
-  getStaff: () => request<any[]>('/appointments/staff'),
+  getStaff: (serviceType?: string) => 
+    request<any[]>(`/appointments/staff${serviceType ? `?serviceType=${serviceType}` : ''}`),
   
   createAppointment: (data: {
     staffId: string;
@@ -89,5 +90,36 @@ export const api = {
     request<any>(`/chat/sessions/${sessionId}/messages`, {
       method: 'POST',
       body: JSON.stringify({ content }),
+    }),
+
+  // Leads (contact form)
+  createLead: (data: {
+    name: string;
+    email: string;
+    phone?: string;
+    company?: string;
+    service?: string;
+    message: string;
+  }) =>
+    request<{ message: string }>('/leads', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  // Profile
+  getProfile: () => request<any>('/profile'),
+  
+  updateProfile: (data: {
+    companyName?: string;
+    phone?: string;
+    legalForm?: string;
+    street?: string;
+    city?: string;
+    postalCode?: string;
+    howDidYouHear?: string;
+  }) =>
+    request<any>('/profile', {
+      method: 'PUT',
+      body: JSON.stringify(data),
     }),
 };

@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 import { api } from '../services/api';
+import Header from '../components/Header';
+import { useLanguage } from '../i18n/LanguageContext';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -13,6 +15,7 @@ export default function LoginPage() {
   
   const navigate = useNavigate();
   const { login } = useAuthStore();
+  const { t } = useLanguage();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +32,7 @@ export default function LoginPage() {
         setError(response.error || 'Inloggen mislukt');
       }
     } catch (err) {
-      setError('Er is een fout opgetreden. Probeer het opnieuw.');
+      setError(t.auth.error);
     } finally {
       setLoading(false);
     }
@@ -37,26 +40,14 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
-      <header className="px-4 py-4">
-        <Link
-          to="/"
-          className="inline-flex items-center text-gray-600 hover:text-gray-900"
-        >
-          <ArrowLeft className="w-5 h-5 mr-2" />
-          Terug naar home
-        </Link>
-      </header>
+      <Header />
 
       {/* Form */}
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-primary-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <span className="text-white font-bold text-2xl">O</span>
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900">Welkom terug</h1>
-            <p className="text-gray-600 mt-2">Log in op uw Oostboek account</p>
+            <h1 className="text-2xl font-bold text-gray-900">{t.auth.loginTitle}</h1>
+            <p className="text-gray-600 mt-2">{t.auth.loginSubtitle}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="card space-y-6">
@@ -68,7 +59,7 @@ export default function LoginPage() {
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                E-mailadres
+                {t.auth.email}
               </label>
               <input
                 id="email"
@@ -84,7 +75,7 @@ export default function LoginPage() {
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Wachtwoord
+                {t.auth.password}
               </label>
               <div className="relative">
                 <input
@@ -112,18 +103,25 @@ export default function LoginPage() {
               disabled={loading}
               className="btn-primary w-full py-3"
             >
-              {loading ? 'Bezig met inloggen...' : 'Inloggen'}
+              {loading ? t.auth.loginButton + '...' : t.auth.loginButton}
             </button>
 
             <p className="text-center text-sm text-gray-600">
-              Nog geen account?{' '}
+              {t.auth.noAccount}{' '}
               <Link to="/register" className="text-primary-600 hover:text-primary-700 font-medium">
-                Registreer hier
+                {t.auth.registerHere}
               </Link>
             </p>
           </form>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="bg-primary-950 text-white py-8 px-4">
+        <div className="max-w-6xl mx-auto text-center text-sm text-primary-400">
+          <p>&copy; 2025 Oostboek. {t.footer.rights}</p>
+        </div>
+      </footer>
     </div>
   );
 }

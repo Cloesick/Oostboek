@@ -50,8 +50,8 @@ router.post('/register', async (req, res, next) => {
         passwordHash,
         firstName: data.firstName,
         lastName: data.lastName,
-        phone: data.phone,
-        vatNumber: data.vatNumber,
+        phone: data.phone ?? null,
+        vatNumber: data.vatNumber ?? null,
         gdprConsentAt: new Date(),
         gdprConsentVersion: '1.0',
       },
@@ -77,9 +77,9 @@ router.post('/register', async (req, res, next) => {
         action: 'CONSENT_GIVEN',
         resource: 'user',
         resourceId: user.id,
-        ipAddress: req.ip,
-        userAgent: req.headers['user-agent'],
-        metadata: { consentVersion: '1.0' },
+        ipAddress: req.ip ?? null,
+        userAgent: req.headers['user-agent'] ?? null,
+        metadata: JSON.stringify({ consentVersion: '1.0' }),
       },
     });
     
@@ -130,8 +130,8 @@ router.post('/login', async (req, res, next) => {
         action: 'LOGIN',
         resource: 'user',
         resourceId: user.id,
-        ipAddress: req.ip,
-        userAgent: req.headers['user-agent'],
+        ipAddress: req.ip ?? null,
+        userAgent: req.headers['user-agent'] ?? null,
       },
     });
     
@@ -188,8 +188,8 @@ router.post('/logout', authenticate, async (req, res, next) => {
         action: 'LOGOUT',
         resource: 'user',
         resourceId: req.auth!.userId,
-        ipAddress: req.ip,
-        userAgent: req.headers['user-agent'],
+        ipAddress: req.ip ?? null,
+        userAgent: req.headers['user-agent'] ?? null,
       },
     });
     

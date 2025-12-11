@@ -7,6 +7,8 @@ import rateLimit from 'express-rate-limit';
 import { authRouter } from './routes/auth.js';
 import { appointmentRouter } from './routes/appointments.js';
 import { chatRouter } from './routes/chat.js';
+import { leadsRouter } from './routes/leads.js';
+import { profileRouter } from './routes/profile.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { requestLogger } from './middleware/requestLogger.js';
 
@@ -48,6 +50,8 @@ app.get('/health', (_req, res) => {
 app.use('/api/auth', authRouter);
 app.use('/api/appointments', appointmentRouter);
 app.use('/api/chat', chatRouter);
+app.use('/api/leads', leadsRouter);
+app.use('/api/profile', profileRouter);
 
 // Error handling
 app.use(errorHandler);

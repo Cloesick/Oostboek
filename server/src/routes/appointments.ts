@@ -13,6 +13,20 @@ const SERVICE_TYPES = [
   'SOCIAL_ADVICE',
   'QUICK_QUESTION',
 ] as const;
+
+// Map service types to staff specializations
+const SERVICE_TO_SPECIALIZATION: Record<string, string[]> = {
+  VAT_ADMINISTRATION: ['btw', 'boekhouding'],
+  TAX_CONSULTATION: ['fiscaliteit'],
+  BOOKKEEPING: ['boekhouding'],
+  STARTER_ADVICE: ['starter'],
+  SUCCESSION_PLANNING: ['successie'],
+  ACQUISITION_GUIDANCE: ['overname'],
+  LEGAL_ADVICE: ['fiscaliteit'],
+  SOCIAL_ADVICE: ['lonen'],
+  QUICK_QUESTION: [], // Any staff can handle
+};
+
 import { authenticate } from '../middleware/auth.js';
 import { AppError } from '../middleware/errorHandler.js';
 
@@ -74,7 +88,7 @@ router.get('/available-slots', async (req, res, next) => {
     // Get existing appointments for the day
     const existingAppointments = await prisma.appointment.findMany({
       where: {
-        staffId: staffId as string | undefined,
+        ...(staffId && typeof staffId === 'string' ? { staffId } : {}),
         scheduledAt: {
           gte: startOfDay,
           lte: endOfDay,
@@ -110,10 +124,15 @@ router.get('/available-slots', async (req, res, next) => {
   }
 });
 
-// GET /api/appointments/staff - List available staff
-router.get('/staff', async (_req, res, next) => {
+// GET /api/appointments/staff - List available staff (optionally filtered by service type)
+router.get('/staff', async (req, res, next) => {
   try {
-    const staff = await prisma.staff.findMany({
+    const { serviceType } = req.query;
+    
+    let staff = await prisma.staff.findMany({
+      where: {
+        role: { not: 'ADMIN' }, // Exclude admin staff from appointments
+      },
       select: {
         id: true,
         firstName: true,
@@ -122,6 +141,18 @@ router.get('/staff', async (_req, res, next) => {
         specializations: true,
       },
     });
+    
+    // Filter by specialization if serviceType is provided
+    if (serviceType && typeof serviceType === 'string') {
+      const requiredSpecs = SERVICE_TO_SPECIALIZATION[serviceType] || [];
+      
+      if (requiredSpecs.length > 0) {
+        staff = staff.filter(s => {
+          const staffSpecs = s.specializations.split(',').map(sp => sp.trim().toLowerCase());
+          return requiredSpecs.some(req => staffSpecs.includes(req.toLowerCase()));
+        });
+      }
+    }
     
     res.json({ success: true, data: staff });
   } catch (error) {
@@ -133,6 +164,18 @@ router.get('/staff', async (_req, res, next) => {
 router.post('/', async (req, res, next) => {
   try {
     const data = createAppointmentSchema.parse(req.body);
+    
+    // Rate limit: max 2 pending/confirmed appointments per user
+    const activeAppointments = await prisma.appointment.count({
+      where: {
+        userId: req.auth!.userId,
+        status: { in: ['PENDING', 'CONFIRMED'] },
+      },
+    });
+    
+    if (activeAppointments >= 2) {
+      throw new AppError(429, 'U heeft al 2 openstaande afspraken. Wacht tot een afspraak is afgerond of annuleer er een.');
+    }
     
     // Verify staff exists
     const staff = await prisma.staff.findUnique({
@@ -170,7 +213,7 @@ router.post('/', async (req, res, next) => {
         scheduledAt,
         durationMinutes: data.durationMinutes,
         topic: data.topic,
-        description: data.description,
+        description: data.description ?? null,
         documentsNeeded: data.documentsNeeded.join(','),
       },
       include: {

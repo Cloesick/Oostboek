@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom';
 import { FileText, BarChart3, PieChart, Calculator, ArrowRight, CheckCircle, Monitor, Users } from 'lucide-react';
 import Header from '../components/Header';
+import { useLanguage } from '../i18n/LanguageContext';
 
 export default function BoekhoudingPage() {
+  const { t } = useLanguage();
+  
   return (
     <div className="min-h-screen bg-white font-sans">
       {/* Header */}
@@ -12,14 +15,12 @@ export default function BoekhoudingPage() {
       <section className="bg-primary-900 text-white py-20">
         <div className="max-w-6xl mx-auto px-4">
           <div className="max-w-3xl">
-            <p className="text-accent-400 font-semibold mb-4">Boekhouding</p>
+            <p className="text-accent-400 font-semibold mb-4">{t.nav.boekhouding}</p>
             <h1 className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">
-              Een boekhouder die met je meedenkt
+              {t.pages.boekhouding.hero}
             </h1>
             <p className="text-xl text-primary-200 leading-relaxed">
-              Op zoek naar een 'boekhoudpartner' in Brugge om jouw boekhouding efficiënt te beheren? 
-              Wij zijn graag het financiële aanspreekpunt voor vrije beroepers en ondernemers. 
-              Van éénmanszaak tot kmo en van starter tot gevestigde waarde.
+              {t.pages.boekhouding.heroSub}
             </p>
           </div>
         </div>
@@ -40,7 +41,7 @@ export default function BoekhoudingPage() {
               </p>
 
               <div className="bg-gray-50 p-6 rounded-lg">
-                <h3 className="text-xl font-bold text-primary-900 mb-4">Wij staan in voor o.a.</h3>
+                <h3 className="text-xl font-bold text-primary-900 mb-4">{t.pages.boekhouding.services}</h3>
                 <ul className="space-y-3">
                   <ServiceItem>Analytische boekhouding</ServiceItem>
                   <ServiceItem>Opmaak van exploitatiecijfers en jaarrekeningen</ServiceItem>
@@ -55,23 +56,20 @@ export default function BoekhoudingPage() {
                 <div>
                   <h3 className="text-2xl font-bold text-primary-900 mb-4 flex items-center gap-3">
                     <Monitor className="w-6 h-6 text-accent-500" />
-                    Geen fan van 100% digitaal?
+                    {t.pages.boekhouding.notDigital}
                   </h3>
                   <p className="text-gray-700 leading-relaxed">
-                    Dan zoeken we naar een perfect evenwicht voor jouw boekhouding. Altijd optimaal, 
-                    op tijd en correct. We voorzien op regelmatige basis duidelijke rapporten, het moment 
-                    bij uitstek om samen de resultaten te overlopen en om jou te adviseren richting nieuwe 
-                    stappen en opportuniteiten voor jouw onderneming.
+                    {t.pages.boekhouding.notDigitalText}
                   </p>
                 </div>
 
                 <div>
                   <h3 className="text-2xl font-bold text-primary-900 mb-4 flex items-center gap-3">
                     <Users className="w-6 h-6 text-accent-500" />
-                    Interne boekhouddienst?
+                    {t.pages.boekhouding.internal}
                   </h3>
                   <p className="text-gray-700 leading-relaxed">
-                    Heb je een interne boekhouddienst? Contacteer ons voor een second opinion of finale check!
+                    {t.pages.boekhouding.internalText}
                   </p>
                 </div>
               </div>
@@ -80,15 +78,15 @@ export default function BoekhoudingPage() {
             {/* Sidebar */}
             <div className="space-y-6">
               <div className="bg-primary-900 text-white p-8 rounded-lg">
-                <h3 className="text-xl font-bold mb-4">Neem contact op</h3>
+                <h3 className="text-xl font-bold mb-4">{t.pages.boekhouding.contactUs}</h3>
                 <p className="text-primary-200 mb-6">
-                  Klaar om jouw boekhouding naar een hoger niveau te tillen?
+                  {t.pages.boekhouding.contactSub}
                 </p>
                 <Link
                   to="/register"
                   className="block w-full bg-accent-500 text-white text-center py-3 font-semibold hover:bg-accent-600 transition-colors"
                 >
-                  Start nu
+                  {t.pages.boekhouding.startNow}
                 </Link>
                 <div className="mt-6 pt-6 border-t border-primary-700 text-sm text-primary-300">
                   <p>T. 050/45 70 31</p>
@@ -98,7 +96,7 @@ export default function BoekhoudingPage() {
 
               {/* Quick links */}
               <div className="border border-gray-200 p-6 rounded-lg">
-                <h4 className="font-bold text-primary-900 mb-4">Andere diensten</h4>
+                <h4 className="font-bold text-primary-900 mb-4">{t.pages.boekhouding.otherServices}</h4>
                 <div className="space-y-3">
                   <Link to="/fiscaliteit" className="flex items-center gap-2 text-gray-600 hover:text-accent-600 transition-colors">
                     <ArrowRight className="w-4 h-4" />
@@ -119,10 +117,10 @@ export default function BoekhoudingPage() {
       <section className="bg-gray-50 py-16 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-6">
-            <FeatureCard icon={FileText} title="Jaarrekeningen" description="Correcte en tijdige opmaak" />
-            <FeatureCard icon={BarChart3} title="Rapportage" description="Duidelijke dashboards" />
-            <FeatureCard icon={PieChart} title="Analyses" description="Financiële inzichten" />
-            <FeatureCard icon={Calculator} title="Budgetten" description="Haalbaarheidsstudies" />
+            <FeatureCard icon={FileText} title="Jaarrekeningen" description="Correcte en tijdige opmaak" href="/boekhouding/jaarrekeningen" />
+            <FeatureCard icon={BarChart3} title="Rapportage" description="Duidelijke dashboards" href="/boekhouding/rapportage" />
+            <FeatureCard icon={PieChart} title="Analyses" description="Financiële inzichten" href="/boekhouding/analyses" />
+            <FeatureCard icon={Calculator} title="Budgetten" description="Haalbaarheidsstudies" href="/boekhouding/budgetten" />
           </div>
         </div>
       </section>
@@ -130,9 +128,9 @@ export default function BoekhoudingPage() {
       {/* CTA */}
       <section className="bg-primary-800 py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">Klaar om te starten?</h2>
+          <h2 className="text-3xl font-bold text-white mb-4">{t.pages.boekhouding.readyToStart}</h2>
           <p className="text-primary-200 mb-8">
-            Registreer nu en krijg toegang tot ons digitale klantenportaal.
+            {t.pages.boekhouding.registerNow}
           </p>
           <Link
             to="/register"
@@ -201,18 +199,19 @@ function ServiceItem({ children }: { children: React.ReactNode }) {
   );
 }
 
-function FeatureCard({ icon: Icon, title, description }: { 
+function FeatureCard({ icon: Icon, title, description, href }: { 
   icon: React.ComponentType<{ className?: string }>; 
   title: string; 
-  description: string; 
+  description: string;
+  href: string;
 }) {
   return (
-    <div className="bg-white p-6 border border-gray-200 text-center">
+    <Link to={href} className="bg-white p-6 border border-gray-200 text-center hover:shadow-lg hover:border-primary-300 transition-all">
       <div className="w-12 h-12 bg-primary-900 rounded flex items-center justify-center mx-auto mb-4">
         <Icon className="w-6 h-6 text-white" />
       </div>
       <h3 className="font-bold text-primary-900 mb-1">{title}</h3>
       <p className="text-gray-600 text-sm">{description}</p>
-    </div>
+    </Link>
   );
 }

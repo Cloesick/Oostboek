@@ -291,7 +291,7 @@ export default function FAQPage() {
         </div>
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/">
-            <img src="/oostboek.png" alt="Oostboek" className="h-11 w-auto" />
+            <img src="/oostboek.png" alt="Oostboek Boekhouder Brugge - Logo" className="h-11 w-auto" />
           </Link>
           <nav className="hidden md:flex items-center gap-1">
             <Link to="/boekhouding" className="nav-link">{t.nav.boekhouding}</Link>

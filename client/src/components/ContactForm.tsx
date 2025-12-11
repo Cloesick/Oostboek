@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Send, CheckCircle, AlertCircle, Building2, User, Mail, Phone, Briefcase } from 'lucide-react';
-
-const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xpwvjogv';
+import { api } from '../services/api';
 
 // Service categories with icons and descriptions
 const serviceCategories = {
@@ -125,16 +124,16 @@ export default function ContactForm() {
     setStatus('submitting');
 
     try {
-      const response = await fetch(FORMSPREE_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify(formData),
+      const response = await api.createLead({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone || undefined,
+        company: formData.company || undefined,
+        service: formData.service || undefined,
+        message: formData.message,
       });
 
-      if (response.ok) {
+      if (response.success) {
         setStatus('success');
         setFormData({ name: '', email: '', phone: '', company: '', message: '', service: '' });
       } else {
@@ -394,9 +393,6 @@ export function ContactSection() {
     <section id="contact" className="px-4 py-20 bg-gradient-to-b from-gray-50 to-white">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-12">
-          <span className="inline-block bg-primary-100 text-primary-700 px-4 py-1 rounded-full text-sm font-medium mb-4">
-            Contact
-          </span>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             Laat ons u helpen
           </h2>
@@ -405,20 +401,6 @@ export function ContactSection() {
           </p>
         </div>
         <ContactForm />
-        
-        {/* Alternative Contact */}
-        <div className="mt-8 text-center">
-          <p className="text-gray-500 text-sm">
-            Liever direct contact? Bel ons op{' '}
-            <a href="tel:+3250457031" className="text-primary-600 font-medium hover:underline">
-              050/45 70 31
-            </a>
-            {' '}of mail naar{' '}
-            <a href="mailto:brugge@oostboek.be" className="text-primary-600 font-medium hover:underline">
-              brugge@oostboek.be
-            </a>
-          </p>
-        </div>
       </div>
     </section>
   );

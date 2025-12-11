@@ -17,6 +17,15 @@ model User {
   phone             String?
   vatNumber         String?
   
+  // Profile completion fields
+  companyName       String?
+  legalForm         String?   // eenmanszaak, bv, nv, vzw, starter
+  street            String?
+  city              String?
+  postalCode        String?
+  howDidYouHear     String?   // google, referral, social, other
+  profileCompleted  Boolean   @default(false)
+  
   // MFA fields (Phase 2)
   mfaEnabled        Boolean   @default(false)
   mfaSecret         String?
@@ -150,6 +159,37 @@ model ChatMessage {
   session           ChatSession @relation(fields: [sessionId], references: [id])
   
   @@index([sessionId])
+}
+
+// Contact form leads
+model Lead {
+  id                String    @id @default(cuid())
+  
+  // Contact info
+  name              String
+  email             String
+  phone             String?
+  company           String?
+  
+  // Request details
+  service           String?   // BOEKHOUDING, FISCALITEIT, BEGELEIDING, OTHER
+  message           String
+  
+  // Status tracking
+  status            String    @default("NEW") // NEW, CONTACTED, QUALIFIED, CONVERTED, CLOSED
+  notes             String?
+  
+  // Source tracking
+  source            String    @default("website") // website, referral, etc.
+  
+  // Timestamps
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  contactedAt       DateTime?
+  
+  @@index([status])
+  @@index([createdAt])
+  @@index([email])
 }
 
 // GDPR Audit logging

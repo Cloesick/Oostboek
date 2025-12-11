@@ -6,28 +6,98 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Seeding database...');
 
-  // Create demo staff members
+  // Real Oostboek staff members from personnel.txt
   const staffMembers = [
     {
-      email: 'jan.vermeersch@oostboek.be',
-      firstName: 'Jan',
-      lastName: 'Vermeersch',
+      email: 'dina.tamsin@oostboek.be',
+      firstName: 'Dina',
+      lastName: 'Tamsin',
       role: 'ACCOUNTANT',
-      specializations: 'tax,bookkeeping',
+      specializations: 'boekhouding,btw,lonen',
     },
     {
-      email: 'marie.claeys@oostboek.be',
-      firstName: 'Marie',
-      lastName: 'Claeys',
+      email: 'mattijs.wittevrongel@oostboek.be',
+      firstName: 'Mattijs',
+      lastName: 'Wittevrongel',
       role: 'ADVISOR',
-      specializations: 'tax,succession',
+      specializations: 'fiscaliteit,successie,overname',
     },
     {
-      email: 'pieter.desmet@oostboek.be',
-      firstName: 'Pieter',
-      lastName: 'Desmet',
-      role: 'JURIST',
-      specializations: 'startup,legal',
+      email: 'angelique.haeke@oostboek.be',
+      firstName: 'Angelique',
+      lastName: 'Haeke',
+      role: 'ADMIN',
+      specializations: '',
+    },
+    {
+      email: 'kristel.vandewalle@oostboek.be',
+      firstName: 'Kristel',
+      lastName: 'Vande Walle',
+      role: 'ACCOUNTANT',
+      specializations: 'boekhouding,btw',
+    },
+    {
+      email: 'xenia.lateste@oostboek.be',
+      firstName: 'Xenia',
+      lastName: 'Lateste',
+      role: 'ACCOUNTANT',
+      specializations: 'boekhouding,starter',
+    },
+    {
+      email: 'jessy.moeyaert@oostboek.be',
+      firstName: 'Jessy',
+      lastName: 'Moeyaert',
+      role: 'ACCOUNTANT',
+      specializations: 'boekhouding,lonen',
+    },
+    {
+      email: 'bram.keukeleire@oostboek.be',
+      firstName: 'Bram',
+      lastName: 'Keukeleire',
+      role: 'ADVISOR',
+      specializations: 'fiscaliteit,starter,overname',
+    },
+    {
+      email: 'dieter.hoste@oostboek.be',
+      firstName: 'Dieter',
+      lastName: 'Hoste',
+      role: 'ADVISOR',
+      specializations: 'fiscaliteit,successie,internationaal',
+    },
+    {
+      email: 'geert.hutsebaut@oostboek.be',
+      firstName: 'Geert',
+      lastName: 'Hutsebaut',
+      role: 'ACCOUNTANT',
+      specializations: 'boekhouding,fiscaliteit,btw',
+    },
+    {
+      email: 'sophie.ysenbrandt@oostboek.be',
+      firstName: 'Sophie',
+      lastName: 'Ysenbrandt',
+      role: 'ACCOUNTANT',
+      specializations: 'boekhouding,btw,internationaal',
+    },
+    {
+      email: 'dylan.denys@oostboek.be',
+      firstName: 'Dylan',
+      lastName: 'Denys',
+      role: 'ACCOUNTANT',
+      specializations: 'boekhouding,btw',
+    },
+    {
+      email: 'ann.degryse@oostboek.be',
+      firstName: 'Ann',
+      lastName: 'Degryse',
+      role: 'ADMIN',
+      specializations: '',
+    },
+    {
+      email: 'mathias.lievens@oostboek.be',
+      firstName: 'Mathias',
+      lastName: 'Lievens',
+      role: 'ADVISOR',
+      specializations: 'starter,overname',
     },
   ];
 
