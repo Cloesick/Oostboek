@@ -4,6 +4,10 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 
+// Log environment for debugging
+console.log('DATABASE_URL exists:', !!process.env['DATABASE_URL']);
+console.log('NODE_ENV:', process.env['NODE_ENV']);
+
 import { authRouter } from './routes/auth.js';
 import { appointmentRouter } from './routes/appointments.js';
 import { chatRouter } from './routes/chat.js';
