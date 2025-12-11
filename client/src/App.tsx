@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from './stores/authStore';
 import Layout from './components/Layout';
+import CookieConsent from './components/CookieConsent';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -30,7 +31,9 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function App() {
   return (
-    <Routes>
+    <>
+      <CookieConsent />
+      <Routes>
       {/* Public routes */}
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
@@ -87,6 +90,7 @@ function App() {
       {/* 404 Not Found */}
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
+    </>
   );
 }
 
