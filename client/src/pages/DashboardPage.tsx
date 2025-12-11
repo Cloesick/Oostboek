@@ -7,7 +7,6 @@ import type { Appointment } from '../types/api';
 import DocumentUploadModal, { ProcessedDocument } from '../components/DocumentUploadModal';
 import { useLanguage } from '../i18n/LanguageContext';
 
-
 export default function DashboardPage() {
   const { user } = useAuthStore();
   const { t } = useLanguage();
